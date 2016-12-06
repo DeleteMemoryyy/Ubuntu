@@ -1,0 +1,202 @@
+                      | #/* $begin ncopy-ys */
+                      | ##################################################################
+                      | # ncopy.ys - Copy a src block of len ints to dst.
+                      | # Return the number of positive ints (>0) contained in src.
+                      | #
+                      | #	Liu DeXin	1500017704@pku.edu.cn
+                      | #
+                      | # Describe how and why you modified the baseline code.
+                      | # Optimizing Strategy:
+                      | # 1. reduce the number of cyclies spending on loop:
+                      | #	Unfolding the "while" loop.
+                      | #	Using the code wirtten by hands instead of loops.
+                      | # 2. avoid situations with load/use hazard
+                      | #	Do not use value which just fetched from memory.Instead, get two numbers constantly with two available registers.
+                      | # 3. avoid spending on branch misprediction
+                      | #	Insert two sentences between "andl" and "jle" to keep away from insert bubble when mispredicting the PC address.
+                      | # 4. add "iaddl" command
+                      | #
+                      | ##################################################################
+                      | # Do not modify this portion
+                      | # Function prologue.
+  0x000: a05f         | ncopy:	pushl %ebp		# Save old frame pointer
+  0x002: 2045         | 	rrmovl %esp,%ebp	# Set up new frame pointer
+  0x004: a06f         | 	pushl %esi		# Save callee-save regs
+  0x006: a03f         | 	pushl %ebx
+  0x008: a07f         | 	pushl %edi
+  0x00a: 503508000000 | 	mrmovl 8(%ebp),%ebx	# src
+  0x010: 502510000000 | 	mrmovl 16(%ebp),%edx	# len
+  0x016: 50150c000000 | 	mrmovl 12(%ebp),%ecx	# dst
+                      | 
+                      | ##################################################################
+                      | # You can modify this portion
+  0x01c: 6300         | 	xorl %eax,%eax		# count = 0;
+                      | 
+  0x01e: 70cb000000   | 	jmp CL6
+  0x023:              | L6:
+  0x023: 506300000000 | 	mrmovl (%ebx), %esi
+  0x029: 507304000000 | 	mrmovl 4(%ebx), %edi	
+  0x02f: 6266         | 	andl %esi, %esi
+  0x031: 406100000000 | 	rmmovl %esi,(%ecx)
+  0x037: 407104000000 | 	rmmovl %edi,4(%ecx)
+  0x03d: 7148000000   | 	jle L1
+  0x042: c0f001000000 | 	iaddl $1, %eax
+  0x048:              | L1:
+  0x048: 6277         | 	andl %edi, %edi
+  0x04a: 506308000000 | 	mrmovl 8(%ebx), %esi
+  0x050: 50730c000000 | 	mrmovl 12(%ebx), %edi
+  0x056: 7161000000   | 	jle L2
+  0x05b: c0f001000000 | 	iaddl $1, %eax
+  0x061:              | L2:
+  0x061: 6266         | 	andl %esi, %esi
+  0x063: 406108000000 | 	rmmovl %esi,8(%ecx)
+  0x069: 40710c000000 | 	rmmovl %edi,12(%ecx)
+  0x06f: 717a000000   | 	jle L3
+  0x074: c0f001000000 | 	iaddl $1, %eax
+  0x07a:              | L3:	
+  0x07a: 6277         | 	andl %edi, %edi
+  0x07c: 506310000000 | 	mrmovl 16(%ebx), %esi
+  0x082: 507314000000 | 	mrmovl 20(%ebx), %edi
+  0x088: 7193000000   | 	jle L4
+  0x08d: c0f001000000 | 	iaddl $1, %eax
+  0x093:              | L4:    
+  0x093: 6266         | 	andl %esi, %esi
+  0x095: 406110000000 | 	rmmovl %esi,16(%ecx)
+  0x09b: 407114000000 | 	rmmovl %edi,20(%ecx)
+  0x0a1: 71ac000000   | 	jle L5
+  0x0a6: c0f001000000 | 	iaddl $1, %eax
+  0x0ac:              | L5:    
+  0x0ac: c0f2faffffff | 	iaddl $-6, %edx
+  0x0b2: c0f318000000 | 	iaddl $24, %ebx
+  0x0b8: c0f118000000 | 	iaddl $24, %ecx
+  0x0be: 6277         | 	andl %edi, %edi	
+  0x0c0: 71cb000000   | 	jle CL6
+  0x0c5: c0f001000000 | 	iaddl $1, %eax
+                      | 	
+  0x0cb:              | CL6:
+  0x0cb: 2027         | 	rrmovl %edx, %edi
+  0x0cd: c0f7fbffffff | 	iaddl $-5, %edi
+  0x0d3: 7623000000   | 	jg L6
+                      | 
+  0x0d8: c0f2fbffffff | 	iaddl $-5, %edx
+  0x0de: 7265010000   | 	jl J4
+  0x0e3: 506300000000 | 	mrmovl (%ebx), %esi
+  0x0e9: 507304000000 | 	mrmovl 4(%ebx), %edi	
+  0x0ef: 6266         | 	andl %esi, %esi
+  0x0f1: 406100000000 | 	rmmovl %esi,(%ecx)
+  0x0f7: 407104000000 | 	rmmovl %edi,4(%ecx)
+  0x0fd: 7108010000   | 	jle J51
+  0x102: c0f001000000 | 	iaddl $1, %eax
+  0x108:              | J51:
+  0x108: 6277         | 	andl %edi, %edi
+  0x10a: 506308000000 | 	mrmovl 8(%ebx), %esi
+  0x110: 50730c000000 | 	mrmovl 12(%ebx), %edi
+  0x116: 7121010000   | 	jle J52
+  0x11b: c0f001000000 | 	iaddl $1, %eax
+  0x121:              | J52:
+  0x121: 6266         | 	andl %esi, %esi
+  0x123: 406108000000 | 	rmmovl %esi,8(%ecx)
+  0x129: 40710c000000 | 	rmmovl %edi,12(%ecx)
+  0x12f: 713a010000   | 	jle J53
+  0x134: c0f001000000 | 	iaddl $1, %eax
+  0x13a:              | J53:	
+  0x13a: 6277         | 	andl %edi, %edi
+  0x13c: 506310000000 | 	mrmovl 16(%ebx), %esi
+  0x142: 406110000000 | 	rmmovl %esi, 16(%ecx)
+  0x148: 7153010000   | 	jle J54
+  0x14d: c0f001000000 | 	iaddl $1, %eax
+  0x153:              | J54:
+  0x153: 6266         | 	andl %esi, %esi
+  0x155: 719a020000   | 	jle Done
+  0x15a: c0f001000000 | 	iaddl $1, %eax
+  0x160: 709a020000   | 	jmp Done
+                      | 
+  0x165:              | J4:
+  0x165: c0f201000000 | 	iaddl $1, %edx
+  0x16b: 72d9010000   | 	jl J3
+  0x170: 506300000000 | 	mrmovl (%ebx), %esi
+  0x176: 507304000000 | 	mrmovl 4(%ebx), %edi	
+  0x17c: 6266         | 	andl %esi, %esi
+  0x17e: 406100000000 | 	rmmovl %esi,(%ecx)
+  0x184: 407104000000 | 	rmmovl %edi,4(%ecx)
+  0x18a: 7195010000   | 	jle J41
+  0x18f: c0f001000000 | 	iaddl $1, %eax
+  0x195:              | J41:
+  0x195: 6277         | 	andl %edi, %edi
+  0x197: 506308000000 | 	mrmovl 8(%ebx), %esi
+  0x19d: 50730c000000 | 	mrmovl 12(%ebx), %edi
+  0x1a3: 71ae010000   | 	jle J42
+  0x1a8: c0f001000000 | 	iaddl $1, %eax
+  0x1ae:              | J42:
+  0x1ae: 6266         | 	andl %esi, %esi
+  0x1b0: 406108000000 | 	rmmovl %esi,8(%ecx)
+  0x1b6: 40710c000000 | 	rmmovl %edi,12(%ecx)
+  0x1bc: 71c7010000   | 	jle J43
+  0x1c1: c0f001000000 | 	iaddl $1, %eax
+  0x1c7:              | J43:
+  0x1c7: 6277         | 	andl %edi, %edi
+  0x1c9: 719a020000   | 	jle Done
+  0x1ce: c0f001000000 | 	iaddl $1, %eax
+  0x1d4: 709a020000   | 	jmp Done
+                      | 
+  0x1d9:              | J3:
+  0x1d9: c0f201000000 | 	iaddl $1, %edx
+  0x1df: 7234020000   | 	jl J2
+  0x1e4: 506300000000 | 	mrmovl (%ebx), %esi
+  0x1ea: 507304000000 | 	mrmovl 4(%ebx), %edi	
+  0x1f0: 6266         | 	andl %esi, %esi
+  0x1f2: 406100000000 | 	rmmovl %esi,(%ecx)
+  0x1f8: 407104000000 | 	rmmovl %edi,4(%ecx)
+  0x1fe: 7109020000   | 	jle J31
+  0x203: c0f001000000 | 	iaddl $1, %eax
+  0x209:              | J31:
+  0x209: 6277         | 	andl %edi, %edi
+  0x20b: 506308000000 | 	mrmovl 8(%ebx), %esi
+  0x211: 406108000000 | 	rmmovl %esi, 8(%ecx)
+  0x217: 7122020000   | 	jle J32
+  0x21c: c0f001000000 | 	iaddl $1, %eax
+  0x222:              | J32:
+  0x222: 6266         | 	andl %esi, %esi
+  0x224: 719a020000   | 	jle Done
+  0x229: c0f001000000 | 	iaddl $1, %eax
+  0x22f: 709a020000   | 	jmp Done
+                      | 
+  0x234:              | J2:
+  0x234: c0f201000000 | 	iaddl $1, %edx
+  0x23a: 7276020000   | 	jl J1
+  0x23f: 506300000000 | 	mrmovl (%ebx), %esi
+  0x245: 507304000000 | 	mrmovl 4(%ebx), %edi	
+  0x24b: 6266         | 	andl %esi, %esi
+  0x24d: 406100000000 | 	rmmovl %esi,(%ecx)
+  0x253: 407104000000 | 	rmmovl %edi,4(%ecx)
+  0x259: 7164020000   | 	jle J21
+  0x25e: c0f001000000 | 	iaddl $1, %eax
+  0x264:              | J21:
+  0x264: 6277         | 	andl %edi, %edi
+  0x266: 719a020000   | 	jle Done
+  0x26b: c0f001000000 | 	iaddl $1, %eax
+  0x271: 709a020000   | 	jmp Done
+                      | 
+  0x276:              | J1:
+  0x276: c0f201000000 | 	iaddl $1, %edx
+  0x27c: 729a020000   | 	jl Done
+  0x281: 506300000000 | 	mrmovl (%ebx), %esi
+  0x287: 406100000000 | 	rmmovl %esi, (%ecx)
+  0x28d: 6266         | 	andl %esi, %esi
+  0x28f: 719a020000   | 	jle Done
+  0x294: c0f001000000 | 	iaddl $1, %eax
+                      | 
+                      | ##################################################################
+                      | # Do not modify the following section of code
+                      | # Function epilogue.
+  0x29a:              | Done:
+  0x29a: b07f         | 	popl %edi               # Restore callee-save registers
+  0x29c: b03f         | 	popl %ebx
+  0x29e: b06f         | 	popl %esi
+  0x2a0: 2054         | 	rrmovl %ebp, %esp
+  0x2a2: b05f         | 	popl %ebp
+  0x2a4: 90           | 	ret
+                      | ##################################################################
+                      | # Keep the following label at the end of your function
+  0x2a5:              | End:
+                      | #/* $end ncopy-ys */

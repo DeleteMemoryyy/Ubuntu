@@ -1,0 +1,6 @@
+break explode_bomb
+break *0x4017e6
+break send_msg
+break explode_bomb
+break *0x00000000004017e2
+break *0x00000000004017e2
