@@ -23,7 +23,7 @@
 /*
  * If NEXT_FIT defined use next fit search, else use first-fit search 
  */
-#define NEXT_FITx
+#define NEXT_FIT
 
 /* Basic constants and macros */
 #define WSIZE       4       /* Word and header/footer size (bytes) */ 
