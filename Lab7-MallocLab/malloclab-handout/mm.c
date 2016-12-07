@@ -40,28 +40,32 @@
 /*
  * Initialize: return -1 on error, 0 on success.
  */
-int mm_init(void) {
+int mm_init(void) 
+{
     return 0;
 }
 
 /*
  * malloc
  */
-void *malloc (size_t size) {
+void *malloc (size_t size) 
+{
     return NULL;
 }
 
 /*
  * free
  */
-void free (void *ptr) {
+void free (void *ptr) 
+{
     if(!ptr) return;
 }
 
 /*
  * realloc - you may want to look at mm-naive.c
  */
-void *realloc(void *oldptr, size_t size) {
+void *realloc(void *oldptr, size_t size) 
+{
     return NULL;
 }
 
@@ -70,7 +74,8 @@ void *realloc(void *oldptr, size_t size) {
  * This function is not tested by mdriver, but it is
  * needed to run the traces.
  */
-void *calloc (size_t nmemb, size_t size) {
+void *calloc (size_t nmemb, size_t size) 
+{
     return NULL;
 }
 
@@ -79,7 +84,8 @@ void *calloc (size_t nmemb, size_t size) {
  * Return whether the pointer is in the heap.
  * May be useful for debugging.
  */
-static int in_heap(const void *p) {
+static int in_heap(const void *p) 
+{
     return p <= mem_heap_hi() && p >= mem_heap_lo();
 }
 
@@ -87,12 +93,16 @@ static int in_heap(const void *p) {
  * Return whether the pointer is aligned.
  * May be useful for debugging.
  */
-static int aligned(const void *p) {
+static int aligned(const void *p) 
+{
     return (size_t)ALIGN(p) == (size_t)p;
 }
 
 /*
  * mm_checkheap
  */
-void mm_checkheap(int lineno) {
+void mm_checkheap(int lineno) 
+{
+    
+
 }
