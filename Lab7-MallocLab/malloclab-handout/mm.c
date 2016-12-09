@@ -53,6 +53,155 @@ static struct rb_root_t
 };
 typedef struct rb_root_t root_t;
 
+#define TYPE_SEGB 0
+#define TYPE_RBTN 2
+#define UNALLOCED 0
+#define ALLOCED 1
+
+#define WSIZE 4 /* Word and header/footer size (bytes) */
+#define DSIZE 8 /* Double word size (bytes) */
+#define RBTNSIZE 0x18 /* Red-black tree node size (bytes) */
+/* Max size of segregated block (bytes)
+ * while at the same time it's the size of tail pointer of segregated block link
+ * array */
+#define MAXSEGSIZE 0x80
+
+typedef unsigned int offset_t;
+
+/* Pack a size or a address offset, type and allocated bit into a word */
+#define PACK(val, type, alloc) ((val) | (type) | (alloc))
+
+/* Read and write a word at address p */
+#define GET(p) (*(unsigned int*)(p))
+#define PUT(p, val) (*(unsigned int*)(p) = (val))
+
+/* Read the size and address offset from address p */
+#define GET_SIZE(p) (GET(p) & ~0x7)
+#define GET_OFFSET(P) (GET(p) & ~0x7)
+
+/* Read the allocated fields and type from address p */
+#define GET_ALLOC(p) (GET(p) & 0x1)
+#define GET_TYPE(p) (GET(p) & 0x2)
+
+/* Given ptr bp, compute address of its header */
+#define HDRP(bp) ((char*)(bp)-WSIZE)
+
+/* Given segregated block ptr bp, compute address of its footer */
+#define SEG_FTRP(bp) ((char*)(bp) + GET_SIZE(HDRP(bp)))
+
+/* Given block ptr bp, compute address of its red-black tree node */
+#define BLKP_TO_RBTNP(bp) ((node_t*)((char*)(bp)-RBTNSIZE))
+
+/* Given red-black node ptr np, compute address of its block */
+#define RBTNP_TO_BLKP(np) ((void*)((char*)(np) + RBTNSIZE))
+
+/* Global variables */
+static root_t* heap_rbtnp = 0; /* Pointer to pointer of red-black tree root */
+static char** heap_segbp
+    = 0; /* Pointer to tail pointer of smallest segregated black list */
+static size_t heap_st = 0;
+
+#define TO_ADD(offset) ((void*)((size_t)(offset) + heap_st))
+#define TO_OFFSET(add) ((offset_t)((size_t)add - heap_st))
+
+/*
+ * Initialize: return -1 on error, 0 on success.
+ */
+int mm_init(void)
+{
+    /* Create the initial empty heap */
+    if ((heap_rbtnp = mem_sbrk(MAXSEGSIZE + SIZE + WSIZE)) == (void*)-1)
+        return -1;
+    heap_st = (unsigned long)heap_rbtnp;
+    heap_segbp = heap_rbtnp + 1;
+    memset(heap_rbtnp, 0, (MAXSEGSIZE + DSIZE + WSIZE));
+    return 0;
+}
+
+/*
+ * malloc
+ */
+void* malloc(size_t size)
+{
+    size_t asize; /* Adjusted block size */
+    size_t extendsize; /* Amount to extend heap if no fit */
+    char **p_ptr, *bp;
+
+    if (heap_rbtnp == 0)
+    {
+        mm_init();
+    }
+
+    if (size == 0)
+        return NULL;
+
+    asize = ALIGN(size);
+
+    if (asize <= MAXSEGSIZE)
+    {
+        offset_t os;
+
+        p_ptr = heap_segbp + asize / DSIZE;
+
+        if (!(*p_ptr))
+            bp = creat_segb(asize);
+        else
+            bp = *p_ptr;
+
+        if(!bp)
+            return NULL;
+
+        os = GET_OFFSET(HDRP(bp));
+        *p_ptr = TO_ADD(os);
+
+        PUT(HDRP(bp), PACK(size, TYPE_SEGB, ALLOCED));
+        PUT(SEG_FTRP(bp), PACK(size, TYPE_SEGB, ALLOCED));
+    }
+    else
+    {
+        node_t *tmp_n = find_fit_rbtn(asize);
+        
+    }
+
+    return bp;
+}
+
+/*
+ * free
+ */
+void free(void* ptr)
+{
+    if (!ptr)
+        return;
+}
+
+/*
+ * realloc - you may want to look at mm-naive.c
+ */
+void* realloc(void* oldptr, size_t size) { return NULL; }
+
+/*
+ * calloc - you may want to look at mm-naive.c
+ * This function is not tested by mdriver, but it is
+ * needed to run the traces.
+ */
+void* calloc(size_t nmemb, size_t size) { return NULL; }
+
+/* Functions of segregated block */
+
+static void *creat_segb(size_t bsize)
+{
+    char *bp;
+    if((long)(bp = mem_sbrk(bsize + DSIZE)) == -1)
+        return NULL;
+    PUT(bp,0);
+    PUT(((size_t)bp + bsize - WSIZE),0);
+
+    return ((size_t)bp + WSIZE);
+}
+
+
+/* Functions of rb_tree */
 /* Define rb_tree macros */
 #define rb_parent(tn) ((node_t*)((tn)->rb_parent_color & ~0x7))
 #define rb_color(tn) ((tn)->rb_parent_color & 0x4)
@@ -62,20 +211,18 @@ typedef struct rb_root_t root_t;
     do                                                                         \
     {                                                                          \
         (tn)->rb_parent_color &= ~0x4;                                         \
-    }
-}
-while (0)
-#define rb_set_black(tn)
-    do
-    {
-        (tn)->rb_parent_color |= 0x4;
     } while (0)
 
-        static inline void
-        rb_set_parent(node_t* node, node_t* parent)
-    {
-        node->rb_parent_color = (node->rb_parent_color & 0x7) | (void*)parent;
-    }
+#define rb_set_black(tn)                                                       \
+    do                                                                         \
+    {                                                                          \
+        (tn)->rb_parent_color |= 0x4;                                          \
+    } while (0)
+
+static inline void rb_set_parent(node_t* node, node_t* parent)
+{
+    node->rb_parent_color = (node->rb_parent_color & 0x7) | (void*)parent;
+}
 
 static inline void rb_set_color(node_t* node, int color)
 {
@@ -472,81 +619,8 @@ static void rb_delete_node(node_t* node, root_t* root)
         rb_delete_adjust(child, parent, root);
 }
 
-#define WSIZE 4 /* Word and header/footer size (bytes) */
-#define DSIZE 8 /* Double word size (bytes) */
-#define RBTNSIZE 0x18 /* Red-black tree node size (bytes) */
-#define MAXSEGSIZE 0x80 /* Max size of segregated block (bytes)*/
 
-/* Pack a size or a address offset, type and allocated bit into a word */
-#define PACK(val, type, alloc) ((val) | ((type) << 1) | (alloc))
 
-/* Read and write a word at address p */
-#define GET(p) (*(unsigned int*)(p))
-#define PUT(p, val) (*(unsigned int*)(p) = (val))
-
-/* Read the size and address offset from address p */
-#define GET_SIZE(p) (GET(p) & ~0x7)
-#define GET_OFFSET(P) (GET(p) & ~0x7)
-
-/* Read the allocated fields and type from address p */
-#define GET_ALLOC(p) (GET(p) & 0x1)
-#define GET_TYPE(p) (GET(p) & 0x2)
-
-/* Given ptr bp, compute address of its header */
-#define HDRP(bp) ((char*)(bp)-WSIZE)
-
-/* Given segregated block ptr bp, compute address of its footer */
-#define SEG_FTRP(bp) ((char*)(bp) + GET_SIZE(HDRP(bp)))
-
-/* Given block ptr bp, compute address of its red-black tree node */
-#define GET_RBTNP(bp) ((node_t*)((char*)(bp)-RBTNSIZE))
-
-/* Given red-black node ptr np, compute address of its block */
-#define GET_BLK(np) ((void*)((char*)(np) + RBTNSIZE))
-
-/* Global variables */
-static char* heap_rbtnp = NULL; /* Pointer to pointer of red-black tree root */
-static char* heap_segbp = NULL; /* Pointer to tail pointer of smallest segregated black list */
-static const int heap_segbnum = MAXSEGSIZE/DSIZE; /* Number of segregated block pointer link */
-
-/*
- * Initialize: return -1 on error, 0 on success.
- */
-int mm_init(void) 
-{
-    /* Create the initial empty heap */
-    if ((heap_rbtnp = mem_sbrk((1+heap_segbnum) * DSIZE + WSIZE)) == (void*)-1)
-        return -1;
-    heap_segbp = heap_rbtnp + 1;
-    memset(heap_rbtnp, 0, (1+heap_segbnum) * DSIZE + WSIZE));
-    return 0;
-}
-
-/*
- * malloc
- */
-void* malloc(size_t size) { return NULL; }
-
-/*
- * free
- */
-void free(void* ptr)
-{
-    if (!ptr)
-        return;
-}
-
-/*
- * realloc - you may want to look at mm-naive.c
- */
-void* realloc(void* oldptr, size_t size) { return NULL; }
-
-/*
- * calloc - you may want to look at mm-naive.c
- * This function is not tested by mdriver, but it is
- * needed to run the traces.
- */
-void* calloc(size_t nmemb, size_t size) { return NULL; }
 
 /*
  * Return whether the pointer is in the heap.
@@ -567,3 +641,4 @@ static int aligned(const void* p) { return (size_t)ALIGN(p) == (size_t)p; }
  * mm_checkheap
  */
 void mm_checkheap(int lineno) {}
+
