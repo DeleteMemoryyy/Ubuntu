@@ -37,16 +37,13 @@
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(p) (((size_t)(p) + (ALIGNMENT - 1)) & ~0x7)
 
-typedef void* ptr_t;
-
+/* Define rb_tree struct */
 static struct rb_node_t
 {
-    ptr_t rb_parent_color;
 #define RB_RED 0
-#define RB_BLACK 1
+#define RB_BLACK 4
     struct rb_node_t *rb_lChild, *rb_rChild;
-    int size;
-    ptr_t p;
+    void* rb_parent_color;
 } __attribute__(aligned(ALIGNMENT));
 typedef struct rb_node_t node_t;
 
@@ -56,34 +53,33 @@ static struct rb_root_t
 };
 typedef struct rb_root_t root_t;
 
-#define rb_parent(tn) ((node_t*)((tn)->rb_parent_color & ~7))
-#define rb_color(tn) ((tn)->rb_parent_color & 1)
+/* Define rb_tree macros */
+#define rb_parent(tn) ((node_t*)((tn)->rb_parent_color & ~0x7))
+#define rb_color(tn) ((tn)->rb_parent_color & 0x4)
 #define rb_is_red(tn) (!rb_color(tn))
 #define rb_is_black(tn) (rb_color(tn))
-#define rb_root_is_empty(root) ((root) == NULL)
-#define rb_is_empty(tb) (rb_parent(tn) == (tn))
 #define rb_set_red(tn)                                                         \
     do                                                                         \
     {                                                                          \
-        (tn)->rb_parent_color &= ~1;                                           \
+        (tn)->rb_parent_color &= ~0x4;                                         \
     }
 }
 while (0)
 #define rb_set_black(tn)
     do
     {
-        (tn)->rb_parent_color |= 1;
+        (tn)->rb_parent_color |= 0x4;
     } while (0)
 
         static inline void
         rb_set_parent(node_t* node, node_t* parent)
     {
-        node->rb_parent_color = (node->rb_parent_color & 7) | (ptr_t)parent;
+        node->rb_parent_color = (node->rb_parent_color & 0x7) | (void*)parent;
     }
 
 static inline void rb_set_color(node_t* node, int color)
 {
-    node->rb_parent_color = (node->rb_parent_color & ~1) | color;
+    node->rb_parent_color = (node->rb_parent_color & ~0x1) | color;
 }
 
 static void rb_left_rotate(node_t* node, root_t* root)
@@ -142,7 +138,7 @@ static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link)
 {
     /* Set node's parent and color
      * Default color of new node is red (0) */
-    node->rb_parent_color = (ptr_t)parent;
+    node->rb_parent_color = (void*)parent;
 
     node->rb_lChild = node->rb_rChild = NULL;
     /* Set relationship between parent and child,
@@ -476,31 +472,55 @@ static void rb_delete_node(node_t* node, root_t* root)
         rb_delete_adjust(child, parent, root);
 }
 
-static node_t* rb_find_free_block(int required_size, root_t* root)
-{
-    node_t *cur_node = root->rb_node, *nexnode_t;
-    int cur_size;
-    if (cur_node == NULL)
-        return NULL;
-    while (cur_node)
-    {
-        cur_size = cur_node->size;
-        if (required_size < cur_s)
-            nexnode_t = cur_node->left;
-        else
-            nexnode_t = cur_node->right;
-        if (nexnode_t)
-            cur_node = nexnode_t;
-        else
-            break;
-    }
-    if ()
-}
+#define WSIZE 4 /* Word and header/footer size (bytes) */
+#define DSIZE 8 /* Double word size (bytes) */
+#define RBTNSIZE 0x18 /* Red-black tree node size (bytes) */
+#define MAXSEGSIZE 0x80 /* Max size of segregated block (bytes)*/
+
+/* Pack a size or a address offset, type and allocated bit into a word */
+#define PACK(val, type, alloc) ((val) | ((type) << 1) | (alloc))
+
+/* Read and write a word at address p */
+#define GET(p) (*(unsigned int*)(p))
+#define PUT(p, val) (*(unsigned int*)(p) = (val))
+
+/* Read the size and address offset from address p */
+#define GET_SIZE(p) (GET(p) & ~0x7)
+#define GET_OFFSET(P) (GET(p) & ~0x7)
+
+/* Read the allocated fields and type from address p */
+#define GET_ALLOC(p) (GET(p) & 0x1)
+#define GET_TYPE(p) (GET(p) & 0x2)
+
+/* Given ptr bp, compute address of its header */
+#define HDRP(bp) ((char*)(bp)-WSIZE)
+
+/* Given segregated block ptr bp, compute address of its footer */
+#define SEG_FTRP(bp) ((char*)(bp) + GET_SIZE(HDRP(bp)))
+
+/* Given block ptr bp, compute address of its red-black tree node */
+#define GET_RBTNP(bp) ((node_t*)((char*)(bp)-RBTNSIZE))
+
+/* Given red-black node ptr np, compute address of its block */
+#define GET_BLK(np) ((void*)((char*)(np) + RBTNSIZE))
+
+/* Global variables */
+static char* heap_rbtnp = NULL; /* Pointer to pointer of red-black tree root */
+static char* heap_segbp = NULL; /* Pointer to tail pointer of smallest segregated black list */
+static const int heap_segbnum = MAXSEGSIZE/DSIZE; /* Number of segregated block pointer link */
 
 /*
  * Initialize: return -1 on error, 0 on success.
  */
-int mm_init(void) { return 0; }
+int mm_init(void) 
+{
+    /* Create the initial empty heap */
+    if ((heap_rbtnp = mem_sbrk((1+heap_segbnum) * DSIZE + WSIZE)) == (void*)-1)
+        return -1;
+    heap_segbp = heap_rbtnp + 1;
+    memset(heap_rbtnp, 0, (1+heap_segbnum) * DSIZE + WSIZE));
+    return 0;
+}
 
 /*
  * malloc
