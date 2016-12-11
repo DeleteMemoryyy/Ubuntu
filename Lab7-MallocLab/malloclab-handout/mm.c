@@ -44,7 +44,7 @@ static struct rb_node_t
 #define RB_BLACK 1
     struct rb_node_t *rb_lChild, *rb_rChild;
     void* rb_parent_color;
-} __attribute__(aligned(ALIGNMENT));
+} __attribute__((aligned(ALIGNMENT)));
 typedef struct rb_node_t node_t;
 
 static struct rb_root_t
@@ -61,7 +61,6 @@ typedef struct rb_root_t root_t;
 #define WSIZE 4 /* Word and header/footer size (bytes) */
 #define DSIZE 8 /* Double word size (bytes) */
 #define RBTNSIZE 0x18 /* Red-black tree node size (bytes) */
-
 
 #define MINBLKSIZE (DSIZE * 2)
 
@@ -106,13 +105,24 @@ static char* heap_st = 0;
 #define TO_ADD(offset) ((char*)((size_t)(offset) + heap_st))
 #define TO_OFFSET(add) ((offset_t)((size_t)add - heap_st))
 
+static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link);
+static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize);
+static void rb_delete_node(node_t* node);
+static void seg_delete_blk(char* bp);
+static void* find_fit_rbtn(node_t* cur_node, size_t asize);
+static char* create_blk(size_t asize);
+static void place_blk(char* bp, size_t asize);
+static void devide_blk(char* bp, size_t asize);
+static void* coalesce_blk(char* bp, size_t asize)
+
+
 /*
  * Initialize: return -1 on error, 0 on success.
  */
 int mm_init(void)
 {
     /* createe the initial empty heap */
-    if ((heap_rbrp = mem_sbrk(MAXSEGBLKSIZE + SIZE + WSIZE)) == (void*)-1)
+    if ((heap_rbrp = mem_sbrk(MAXSEGBLKSIZE + DSIZE + WSIZE)) == (void*)-1)
         return -1;
     heap_st = (char*)heap_rbrp;
     heap_segbp = (char**)((char*)heap_rbrp + DSIZE);
@@ -182,46 +192,44 @@ void free(void* ptr)
         return;
     size_t asize = GET_SIZE(HDRP(ptr));
 
-    ptr = coalesce_blk((char*)ptr,asize);
+    ptr = coalesce_blk((char*)ptr, asize);
 }
 
 /*
  * realloc - you may want to look at mm-naive.c
  */
-void* realloc(void* old_ptr, size_t size) 
+void* realloc(void* old_ptr, size_t size)
 {
     size_t old_size;
 
-    void * new_ptr;
+    void* new_ptr;
 
-    if(size == 0)
+    if (size == 0)
     {
         free(old_ptr);
         return NULL;
     }
 
-    if(old_ptr == NULL)
+    if (old_ptr == NULL)
         return malloc(size);
 
     old_size = GET_SIZE(HDRP(old_ptr));
 
-    if(size <= old_size)
+    if (size <= old_size)
     {
         size_t rest_size = old_size - size - WSIZE;
-
     }
     else
     {
-        if(!(new_ptr = malloc(size)))
+        if (!(new_ptr = malloc(size)))
             return NULL;
 
-        memcpy(new_ptr,old_ptr,old_size);
+        memcpy(new_ptr, old_ptr, old_size);
 
         free(old_ptr);
     }
 
     return new_ptr;
-
 }
 
 /*
@@ -229,10 +237,10 @@ void* realloc(void* old_ptr, size_t size)
  * This function is not tested by mdriver, but it is
  * needed to run the traces.
  */
-void* calloc(size_t nmemb, size_t size) 
+void* calloc(size_t nmemb, size_t size)
 {
     size_t bytes = nmemb * size;
-    void *newptr;
+    void* newptr;
 
     newptr = malloc(bytes);
     memset(newptr, 0, bytes);
@@ -743,7 +751,7 @@ static void place_blk(char* bp, size_t asize)
     {
         PUT(HDRP(bp), PACK(asize, TYPE_RBTN, UNALLOCED));
         PUT(bp + asize, PACK(real_size, TYPE_RBTN, UNALLOCED));
-        rb_insert_node(heap_rbrp->rb_node, (node_t*)(bp),asize);
+        rb_insert_node(heap_rbrp->rb_node, (node_t*)(bp), asize);
     }
     else
     {
@@ -776,9 +784,10 @@ static void devide_blk(char* bp, size_t asize)
     place_blk(bp + asize + DSIZE, rest_size - DSIZE);
 }
 
-static void* coalesce_blk(char* bp,size_t asize)
+static void* coalesce_blk(char* bp, size_t asize)
 {
-    unsigned int prev_info = GET(bp - DSIZE), next_info = GET(bp + asize + WSIZE);
+    unsigned int prev_info = GET(bp - DSIZE),
+                 next_info = GET(bp + asize + WSIZE);
 
     if (IS_UNALLOCED(next_info))
     {
@@ -795,13 +804,13 @@ static void* coalesce_blk(char* bp,size_t asize)
         size_t prev_size = READ_SIZE(prev_info);
         asize += prev_size + DSIZE;
         bp -= (prev_size + DSIZE);
-        if(IS_SEGB(prev_info))
+        if (IS_SEGB(prev_info))
             seg_delete_blk(bp);
         else
             rb_delete_node(bp);
     }
 
-    place_blk(bp,asize);
+    place_blk(bp, asize);
 
     return (void*)bp;
 }
