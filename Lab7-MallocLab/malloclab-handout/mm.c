@@ -38,16 +38,16 @@
 #define ALIGN(p) (((size_t)(p) + (ALIGNMENT - 1)) & ~0x7)
 
 /* Define rb_tree struct */
-static struct rb_node_t
+struct rb_node_t
 {
 #define RB_RED 0
 #define RB_BLACK 1
     struct rb_node_t *rb_lChild, *rb_rChild;
-    void* rb_parent_color;
-} __attribute__((aligned(ALIGNMENT)));
+    long unsigned int rb_parent_color;
+};
 typedef struct rb_node_t node_t;
 
-static struct rb_root_t
+struct rb_root_t
 {
     struct rb_node_t* rb_node;
 };
@@ -94,6 +94,16 @@ typedef unsigned int offset_t;
 
 #define IS_SEGB(info) (((unsigned int)(info)&0x2) == TYPE_SEGB)
 
+
+#define seg_successor_offset(bp) ((offset_t)(GET((bp))))
+
+#define seg_prev_offset(bp) ((offset_t)(GET((char*)(bp) + WSIZE)))
+
+#define seg_set_successor(bp, offset) (PUT((bp), (offset)))
+
+#define seg_set_prev(bp, offset) (PUT((char*)(bp) + WSIZE, (offset)))
+
+
 /* Global variables */
 static root_t* heap_rbrp = 0; /* Pointer to pointer of red-black tree root */
 static char** heap_segbp
@@ -102,8 +112,8 @@ static char** heap_edsegbp = 0; /* Pointer to after tail pointer of smallest
                                    segregated block list array */
 static char* heap_st = 0;
 
-#define TO_ADD(offset) ((char*)((size_t)(offset) + heap_st))
-#define TO_OFFSET(add) ((offset_t)((size_t)add - heap_st))
+#define TO_ADD(offset) ((char*)((long unsigned int)(offset_t) + (long unsigned int)heap_st))
+#define TO_OFFSET(add) ((offset_t)((long unsigned int)add - (long unsigned int)heap_st))
 
 static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link);
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize);
@@ -113,20 +123,19 @@ static void* find_fit_rbtn(node_t* cur_node, size_t asize);
 static char* create_blk(size_t asize);
 static void place_blk(char* bp, size_t asize);
 static void devide_blk(char* bp, size_t asize);
-static void* coalesce_blk(char* bp, size_t asize)
+static void* coalesce_blk(char* bp, size_t asize);
 
-
-/*
- * Initialize: return -1 on error, 0 on success.
- */
-int mm_init(void)
+    /*
+     * Initialize: return -1 on error, 0 on success.
+     */
+    int mm_init(void)
 {
     /* createe the initial empty heap */
     if ((heap_rbrp = mem_sbrk(MAXSEGBLKSIZE + DSIZE + WSIZE)) == (void*)-1)
         return -1;
     heap_st = (char*)heap_rbrp;
     heap_segbp = (char**)((char*)heap_rbrp + DSIZE);
-    heap_edsegbp = heap_segbpp + MAXSEGBLKSIZE / DSIZE;
+    heap_edsegbp = heap_segbp + MAXSEGBLKSIZE / DSIZE;
     memset(heap_rbrp, 0, (MAXSEGBLKSIZE + DSIZE + WSIZE));
     return 0;
 }
@@ -198,30 +207,31 @@ void free(void* ptr)
 /*
  * realloc - you may want to look at mm-naive.c
  */
-void* realloc(void* old_ptr, size_t size)
+void* realloc(void* old_ptr, size_t asize)
 {
     size_t old_size;
 
     void* new_ptr;
 
-    if (size == 0)
+    if (asize == 0)
     {
         free(old_ptr);
         return NULL;
     }
 
     if (old_ptr == NULL)
-        return malloc(size);
+        return malloc(asize);
 
     old_size = GET_SIZE(HDRP(old_ptr));
 
-    if (size <= old_size)
+    if (asize <= old_size)
     {
-        size_t rest_size = old_size - size - WSIZE;
+        devide_blk(old_ptr,asize);
+        new_ptr = old_ptr;
     }
     else
     {
-        if (!(new_ptr = malloc(size)))
+        if (!(new_ptr = malloc(asize)))
             return NULL;
 
         memcpy(new_ptr, old_ptr, old_size);
@@ -254,12 +264,23 @@ void* calloc(size_t nmemb, size_t size)
 #define rb_color(tn) ((tn)->rb_parent_color & 0x1)
 #define rb_is_red(tn) (!rb_color(tn))
 #define rb_is_black(tn) (rb_color(tn))
-#define rb_set_red(tn) ((tn)->rb_parent_color &= ~0x1)
-#define rb_set_black(tn) ((tn)->rb_parent_color |= 0x1)
+// #define rb_set_red(tn) ((tn)->rb_parent_color &= ~0x1)
+// #define rb_set_black(tn) ((tn)->rb_parent_color |= 0x1)
+
+static inline void rb_set_red(node_t* node)
+{
+    node->rb_parent_color = (long unsigned int)(((long unsigned int)(node->rb_parent_color) & ~0x1));
+}
+
+static inline void rb_set_black(node_t* node)
+{
+    node->rb_parent_color = (long unsigned int)(((long unsigned int)(node->rb_parent_color) | 0x1));
+
+}
 
 static inline void rb_set_parent(node_t* node, node_t* parent)
 {
-    node->rb_parent_color = (node->rb_parent_color & 0x7) | (void*)parent;
+    node->rb_parent_color = (long unsigned int)(((long unsigned int)(node->rb_parent_color) & 0x7) | (long unsigned int)parent);
 }
 
 static inline void rb_set_color(node_t* node, int color)
@@ -299,7 +320,7 @@ static void rb_right_rotate(node_t* node)
     node_t* left = node->rb_lChild;
 
     /* Set the relationship between node's left child's right child and node */
-    if ((node->lb_rChild = left->rb_rChild))
+    if ((node->rb_lChild = left->rb_rChild))
         rb_set_parent(left->rb_rChild, node);
 
     /* Set the relationship between node and the new node */
@@ -323,7 +344,7 @@ static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link)
 {
     /* Set node's parent and color
      * Default color of new node is red (0) */
-    node->rb_parent_color = (void*)parent;
+    node->rb_parent_color = (long unsigned int)parent;
 
     node->rb_lChild = node->rb_rChild = NULL;
     /* Set relationship between parent and child,
@@ -364,7 +385,7 @@ static void rb_insert_adjust(node_t* node)
             {
                 /* Left rotate from parent and change the situation
                  * in to case 5 */
-                rb_left_rotate(parent, heap_rbrp);
+                rb_left_rotate(parent);
 
                 /* Exchange node and parent to make they get
                  * correct meanings */
@@ -378,7 +399,7 @@ static void rb_insert_adjust(node_t* node)
              * and right rotate gparent */
             rb_set_red(gparent);
             rb_set_black(parent);
-            rb_right_rotate(gparent, root);
+            rb_right_rotate(gparent);
         }
         /* Mirrored situation */
         else
@@ -403,7 +424,7 @@ static void rb_insert_adjust(node_t* node)
             {
                 /* Right rotate from parent and change the
                  * situation in to case 5 */
-                rb_right_rotate(parent, heap_rbrp);
+                rb_right_rotate(parent);
 
                 /* Exchange node and parent to make they get
                  * correct meanings */
@@ -417,7 +438,7 @@ static void rb_insert_adjust(node_t* node)
              * and left rotate gparent */
             rb_set_red(gparent);
             rb_set_black(parent);
-            rb_left_rotate(gparent, heap_rbrp);
+            rb_left_rotate(gparent);
         }
     }
     rb_set_black(heap_rbrp->rb_node);
@@ -426,7 +447,7 @@ static void rb_insert_adjust(node_t* node)
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
 {
     assert(cur_node);
-    int cur_size = GET_SIZE(HDRP(cur_node));
+    size_t cur_size = GET_SIZE(HDRP(cur_node));
     if (asize < cur_size)
         if (cur_node->rb_lChild)
             rb_insert_node(cur_node->rb_lChild, node, asize);
@@ -434,7 +455,7 @@ static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
         {
             rb_link_node(node, cur_node, &(cur_node->rb_lChild));
             rb_set_black(node);
-            rb_insert_adjust(node, cur_node);
+            rb_insert_adjust(node);
         }
     else if (cur_node->rb_rChild)
         rb_insert_node(cur_node->rb_rChild, node, asize);
@@ -442,7 +463,7 @@ static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
     {
         rb_link_node(node, cur_node, &(cur_node->rb_rChild));
         rb_set_black(node);
-        rb_insert_adjust(node, cur_node);
+        rb_insert_adjust(node);
     }
 }
 
@@ -467,7 +488,7 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             {
                 rb_set_black(sibling);
                 rb_set_red(parent);
-                rb_left_rotate(parent, heap_rbrp);
+                rb_left_rotate(parent);
                 sibling = parent->rb_rChild;
             }
 
@@ -491,10 +512,10 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                     || rb_color(sibling->rb_rChild) == RB_BLACK)
                 {
                     node_t* sibling_left;
-                    if (sibling_left = sibling->rb_lChild)
+                    if ((sibling_left = sibling->rb_lChild))
                         rb_set_black(sibling_left);
                     rb_set_red(sibling);
-                    rb_right_rotate(sibling, heap_rbrp);
+                    rb_right_rotate(sibling);
                     sibling = parent->rb_rChild;
                 }
 
@@ -508,7 +529,7 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                 if (sibling->rb_rChild)
                     rb_set_black(sibling->rb_rChild);
 
-                rb_left_rotate(parent, heap_rbrp);
+                rb_left_rotate(parent);
 
                 node = heap_rbrp->rb_node;
             }
@@ -529,7 +550,7 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             {
                 rb_set_black(sibling);
                 rb_set_red(parent);
-                rb_right_rotate(parent, heap_rbrp);
+                rb_right_rotate(parent);
                 sibling = parent->rb_lChild;
             }
 
@@ -553,10 +574,10 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                     || rb_color(sibling->rb_lChild) == RB_BLACK)
                 {
                     node_t* sibling_right;
-                    if (sibling_right = sibling->rb_rChild)
+                    if ((sibling_right = sibling->rb_rChild))
                         rb_set_black(sibling_right);
                     rb_set_red(sibling);
-                    rb_left_rotate(sibling, heap_rbrp);
+                    rb_left_rotate(sibling);
                     sibling = parent->rb_lChild;
                 }
 
@@ -570,7 +591,7 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                 if (sibling->rb_lChild)
                     rb_set_black(sibling->rb_lChild);
 
-                rb_right_rotate(parent, heap_rbrp);
+                rb_right_rotate(parent);
 
                 node = heap_rbrp->rb_node;
             }
@@ -602,7 +623,7 @@ static void rb_delete_node(node_t* node)
         node_t* old_left = old->rb_lChild;
 
         /* Look for successor of node */
-        node = node->right;
+        node = node->rb_rChild;
         while ((tmp = node->rb_lChild))
             node = tmp;
 
@@ -652,11 +673,11 @@ static void rb_delete_node(node_t* node)
         /* If the color of moved node is black,
          * the rb_tree need further adjustment */
         if (color == RB_BLACK)
-            rb_delete_adjust(child, parent, heap_rbrp);
+            rb_delete_adjust(child, parent);
         return;
     }
 
-    parent = node->parent;
+    parent = rb_parent(node);
     color = rb_color(node);
 
     /* Set the relationship between successor's child
@@ -677,13 +698,8 @@ static void rb_delete_node(node_t* node)
     /* If the color of moved node is black,
      * the rb_tree need further adjustment */
     if (color == RB_BLACK)
-        rb_delete_adjust(child, parent, heap_rbrp);
+        rb_delete_adjust(child, parent);
 }
-
-#define seg_successor_offset(bp) ((offset_t)(GET((bp))))
-#define seg_prev_offset(bp) ((offset_t)(GET((char*)(bp) + WSIZE)))
-#define seg_set_successor(bp, offset) (PUT((bp), (offset)))
-#define seg_set_prev(bp, offset) (PUT((char*)(bp) + WSIZE, (offset)))
 
 static void seg_delete_blk(char* bp)
 {
@@ -703,11 +719,11 @@ static void seg_delete_blk(char* bp)
     else
     {
         char** p_ptr = heap_segbp + asize / DSIZE - 1;
-        assert(*p_ptr == cur_node);
+        assert(*p_ptr == bp);
 
         if (cur_pre_os)
         {
-            node_t* pre_node = TO_ADD(cur_pre_os);
+            char* pre_node = TO_ADD(cur_pre_os);
             seg_set_successor(pre_node, 0);
             *p_ptr = pre_node;
         }
@@ -721,14 +737,14 @@ static void* find_fit_rbtn(node_t* cur_node, size_t asize)
     if (!cur_node)
         return NULL;
 
-    int tsize = GET_SIZE(HDRP(cur_node));
+    size_t tsize = GET_SIZE(HDRP(cur_node));
     if (asize == tsize)
         return cur_node;
     if (asize > tsize)
         return find_fit_rbtn(cur_node->rb_rChild, asize);
 
     node_t* tmp_node;
-    if (tmp_node = find_fit_rbtn(cur_node->rb_lChild, asize))
+    if ((tmp_node = find_fit_rbtn(cur_node->rb_lChild, asize)))
         return tmp_node;
     return cur_node;
 }
@@ -750,7 +766,7 @@ static void place_blk(char* bp, size_t asize)
     if (asize > MAXSEGBLKSIZE)
     {
         PUT(HDRP(bp), PACK(asize, TYPE_RBTN, UNALLOCED));
-        PUT(bp + asize, PACK(real_size, TYPE_RBTN, UNALLOCED));
+        PUT(bp + asize, PACK(asize, TYPE_RBTN, UNALLOCED));
         rb_insert_node(heap_rbrp->rb_node, (node_t*)(bp), asize);
     }
     else
@@ -796,7 +812,7 @@ static void* coalesce_blk(char* bp, size_t asize)
         if (IS_SEGB(next_info))
             seg_delete_blk(next_ptr);
         else
-            rb_delete_node(next_ptr);
+            rb_delete_node((node_t*)next_ptr);
     }
 
     if (IS_UNALLOCED(prev_info))
@@ -807,7 +823,7 @@ static void* coalesce_blk(char* bp, size_t asize)
         if (IS_SEGB(prev_info))
             seg_delete_blk(bp);
         else
-            rb_delete_node(bp);
+            rb_delete_node((node_t*)bp);
     }
 
     place_blk(bp, asize);
