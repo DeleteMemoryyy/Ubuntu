@@ -94,7 +94,6 @@ typedef unsigned int offset_t;
 
 #define IS_SEGB(info) (((unsigned int)(info)&0x2) == TYPE_SEGB)
 
-
 #define seg_successor_offset(bp) ((offset_t)(GET((bp))))
 
 #define seg_prev_offset(bp) ((offset_t)(GET((char*)(bp) + WSIZE)))
@@ -103,17 +102,19 @@ typedef unsigned int offset_t;
 
 #define seg_set_prev(bp, offset) (PUT((char*)(bp) + WSIZE, (offset)))
 
-
 /* Global variables */
 static root_t* heap_rbrp = 0; /* Pointer to pointer of red-black tree root */
 static char** heap_segbp
     = 0; /* Pointer to tail pointer of smallest segregated block list array */
+// static char** heap_segbp_end_search = 0;
 static char** heap_edsegbp = 0; /* Pointer to after tail pointer of smallest
                                    segregated block list array */
 static char* heap_st = 0;
 
-#define TO_ADD(offset) ((char*)((long unsigned int)(offset_t) + (long unsigned int)heap_st))
-#define TO_OFFSET(add) ((offset_t)((long unsigned int)add - (long unsigned int)heap_st))
+#define TO_ADD(offset)                                                         \
+    ((char*)((long unsigned int)(offset_t) + (long unsigned int)heap_st))
+#define TO_OFFSET(add)                                                         \
+    ((offset_t)((long unsigned int)add - (long unsigned int)heap_st))
 
 static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link);
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize);
@@ -125,18 +126,31 @@ static void place_blk(char* bp, size_t asize);
 static void devide_blk(char* bp, size_t asize);
 static void* coalesce_blk(char* bp, size_t asize);
 
-    /*
-     * Initialize: return -1 on error, 0 on success.
-     */
-    int mm_init(void)
+/*
+ * Initialize: return -1 on error, 0 on success.
+ */
+int mm_init(void)
 {
     /* createe the initial empty heap */
-    if ((heap_rbrp = mem_sbrk(MAXSEGBLKSIZE + DSIZE + WSIZE)) == (void*)-1)
+    if ((void*)(heap_rbrp = mem_sbrk(MAXSEGBLKSIZE + 2 * DSIZE + WSIZE))
+        == (void*)-1)
         return -1;
     heap_st = (char*)heap_rbrp;
     heap_segbp = (char**)((char*)heap_rbrp + DSIZE);
+    // heap_segbp_end_search = heap_segbp - 1;
     heap_edsegbp = heap_segbp + MAXSEGBLKSIZE / DSIZE;
     memset(heap_rbrp, 0, (MAXSEGBLKSIZE + DSIZE + WSIZE));
+    PUT(heap_edsegbp, PACK(0, 0, ALLOCED));
+    PUT((char*)heap_edsegbp + WSIZE, PACK(0, 0, ALLOCED));
+
+#ifdef DEBUG
+    printf("\n\nInitialization finished\n");
+    printf("    heap_st:%lx\n", (size_t)heap_st);
+    printf("    heap_rbrp:%lx\n", (size_t)heap_rbrp);
+    printf("    heap_segbp:%lx\n", (size_t)heap_segbp);
+    // printf("    heap_segbp_end_search:%lx\n", (size_t)heap_segbp_end_search);
+    printf("    heap_edsegbp:%lx\n", (size_t)heap_edsegbp);
+#endif
     return 0;
 }
 
@@ -160,14 +174,26 @@ void* malloc(size_t size)
 
     asize = ALIGN(size);
 
+#ifdef DEBUG
+    printf("\n\nMalloc  requiring size:%lu, adjusted size:%lu\n", size, asize);
+#endif
+
     if (asize <= MAXSEGBLKSIZE)
     {
+#ifdef DEBUG
+        printf("    Asking for segregated block\n");
+#endif
         p_ptr = heap_segbp + asize / DSIZE - 1;
         while (p_ptr < heap_edsegbp && !(*p_ptr))
-            p_ptr++;
+            ++p_ptr;
         if (p_ptr < heap_edsegbp)
         {
             bp = *p_ptr;
+#ifdef DEBUG
+            printf("       Found available segregated block: address = %lx, "
+                   "size = %u\n",
+                (size_t)bp, GET_SIZE(HDRP(bp)));
+#endif
             offset_t suc_os = seg_successor_offset(bp);
             if (suc_os)
             {
@@ -177,14 +203,28 @@ void* malloc(size_t size)
             }
             else
                 *p_ptr = NULL;
+
             devide_blk(bp, asize);
             return (void*)bp;
         }
     }
+#ifdef DEBUG
+    printf("    Asking for red-black tree block\n");
+#endif
 
     node_t* fit_node = find_fit_rbtn(heap_rbrp->rb_node, asize);
-    if (!fit_node && !(bp = create_blk(asize)))
-        return NULL;
+    if (!fit_node)
+    {
+        if (!(bp = create_blk(asize)))
+        {
+#ifdef DEBUG
+            printf("    Fail to find available block. Go to create_blk\n");
+#endif
+            return NULL;
+        }
+
+        return (void*)bp;
+    }
 
     rb_delete_node(fit_node);
     bp = (char*)fit_node;
@@ -226,7 +266,7 @@ void* realloc(void* old_ptr, size_t asize)
 
     if (asize <= old_size)
     {
-        devide_blk(old_ptr,asize);
+        devide_blk(old_ptr, asize);
         new_ptr = old_ptr;
     }
     else
@@ -269,18 +309,21 @@ void* calloc(size_t nmemb, size_t size)
 
 static inline void rb_set_red(node_t* node)
 {
-    node->rb_parent_color = (long unsigned int)(((long unsigned int)(node->rb_parent_color) & ~0x1));
+    node->rb_parent_color = (long unsigned int)((
+        (long unsigned int)(node->rb_parent_color) & ~0x1));
 }
 
 static inline void rb_set_black(node_t* node)
 {
-    node->rb_parent_color = (long unsigned int)(((long unsigned int)(node->rb_parent_color) | 0x1));
-
+    node->rb_parent_color = (long unsigned int)((
+        (long unsigned int)(node->rb_parent_color) | 0x1));
 }
 
 static inline void rb_set_parent(node_t* node, node_t* parent)
 {
-    node->rb_parent_color = (long unsigned int)(((long unsigned int)(node->rb_parent_color) & 0x7) | (long unsigned int)parent);
+    node->rb_parent_color
+        = (long unsigned int)(((long unsigned int)(node->rb_parent_color) & 0x7)
+            | (long unsigned int)parent);
 }
 
 static inline void rb_set_color(node_t* node, int color)
@@ -719,6 +762,8 @@ static void seg_delete_blk(char* bp)
     else
     {
         char** p_ptr = heap_segbp + asize / DSIZE - 1;
+        // while(p_ptr != heap_segbp_end_search && *p_ptr != bp)
+        //     --p_ptr;
         assert(*p_ptr == bp);
 
         if (cur_pre_os)
@@ -751,11 +796,26 @@ static void* find_fit_rbtn(node_t* cur_node, size_t asize)
 
 static char* create_blk(size_t asize)
 {
+#ifdef DEBUG
+    printf("        Creating block  requring size = %lu\n", asize);
+#endif
     char* bp;
     if ((long)(bp = mem_sbrk(asize + DSIZE)) == -1)
+    {
+#ifdef DEBUG
+        printf("!!!mem_sbrk failed\n");
+#endif
         return NULL;
+    }
+
+#ifdef DEBUG
+    printf(
+        "        Creating successfully  address = %lx, adjusted size = %lu\n",
+        (size_t)(bp + WSIZE), asize);
+#endif
+
     PUT(bp, PACK(asize, 0, ALLOCED));
-    PUT((bp + asize), PACK(asize, 0, ALLOCED));
+    PUT((bp + asize + WSIZE), PACK(asize, 0, ALLOCED));
 
     return bp + WSIZE;
 }
@@ -803,7 +863,10 @@ static void devide_blk(char* bp, size_t asize)
 static void* coalesce_blk(char* bp, size_t asize)
 {
     unsigned int prev_info = GET(bp - DSIZE),
-                 next_info = GET(bp + asize + WSIZE);
+                 next_info = ((long unsigned int)(bp + asize + WSIZE)
+                                 <= (long unsigned int)mem_heap_hi())
+        ? (GET(bp + asize + WSIZE))
+        : ALLOCED;
 
     if (IS_UNALLOCED(next_info))
     {
