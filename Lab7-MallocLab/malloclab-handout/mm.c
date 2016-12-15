@@ -40,9 +40,10 @@
 /* Define rb_tree struct */
 struct rb_node_t
 {
-    long unsigned int rb_parent_color;
 #define RB_RED 0
 #define RB_BLACK 1
+    size_t rb_color, rb_size;
+    struct rb_node_t* rb_parent;
     struct rb_node_t *rb_lChild, *rb_rChild;
     struct rb_node_t *rb_succ, *rb_prev;
 };
@@ -117,7 +118,6 @@ static char* heap_st = 0;
 #define TO_OFFSET(add)                                                         \
     ((offset_t)((long unsigned int)(add) - (long unsigned int)(heap_st)))
 
-static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link);
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize);
 static void rb_delete_node(node_t* node);
 static void seg_delete_blk(char* bp);
@@ -251,7 +251,7 @@ void* malloc(size_t size)
 #ifdef DEBUG
     printf("    Found available red-black tree block  address = %lx, "
            "size = %lu\n",
-        (size_t)fit_node, GET_SIZE(HDRP(fit_node)));
+        (size_t)fit_node, fit_node->rb_size);
 #endif
 
     rb_delete_node(fit_node);
@@ -363,51 +363,21 @@ void* calloc(size_t nmemb, size_t size)
     return newptr;
 }
 
-/* Functions of rb_tree */
-/* Define rb_tree macros */
-#define rb_parent(tn) ((node_t*)((tn)->rb_parent_color & ~0x7))
-#define rb_color(tn) ((tn)->rb_parent_color & 0x1)
-#define rb_is_red(tn) (!rb_color(tn))
-#define rb_is_black(tn) (rb_color(tn))
-
-static inline void rb_set_red(node_t* node)
-{
-    node->rb_parent_color = (long unsigned int)((
-        (long unsigned int)(node->rb_parent_color) & ~0x1));
-}
-
-static inline void rb_set_black(node_t* node)
-{
-    node->rb_parent_color = (long unsigned int)((
-        (long unsigned int)(node->rb_parent_color) | 0x1));
-}
-
-static inline void rb_set_parent(node_t* node, node_t* parent)
-{
-    node->rb_parent_color
-        = ((node->rb_parent_color) & 0x7) | (long unsigned int)parent;
-}
-
-static inline void rb_set_color(node_t* node, int color)
-{
-    node->rb_parent_color = (node->rb_parent_color & ~0x7) | color;
-}
-
 static void rb_left_rotate(node_t* node)
 {
-    node_t* parent = rb_parent(node);
+    node_t* parent = node->rb_parent;
     node_t* right = node->rb_rChild;
 
     /* Set the relationship between node's right child's left child and node */
     if ((node->rb_rChild = right->rb_lChild))
-        rb_set_parent(right->rb_lChild, node);
+        right->rb_lChild->rb_parent = node;
 
     /* Set the relationship between node and the new node */
     right->rb_lChild = node;
-    rb_set_parent(node, right);
+    node->rb_parent = right;
 
     /* Set the relationship between the new old and the old parent */
-    rb_set_parent(right, parent);
+    right->rb_parent = parent;
     if (parent)
     {
         if (node == parent->rb_lChild)
@@ -421,19 +391,19 @@ static void rb_left_rotate(node_t* node)
 
 static void rb_right_rotate(node_t* node)
 {
-    node_t* parent = rb_parent(node);
+    node_t* parent = node->rb_parent;
     node_t* left = node->rb_lChild;
 
     /* Set the relationship between node's left child's right child and node */
     if ((node->rb_lChild = left->rb_rChild))
-        rb_set_parent(left->rb_rChild, node);
+        left->rb_rChild->rb_parent = node;
 
     /* Set the relationship between node and the new node */
     left->rb_rChild = node;
-    rb_set_parent(node, left);
+    node->rb_parent = left;
 
     /* Set the relationship between the new old and the old parent */
-    rb_set_parent(left, parent);
+    left->rb_parent = parent;
     if (parent)
     {
         if (node == parent->rb_lChild)
@@ -445,29 +415,16 @@ static void rb_right_rotate(node_t* node)
         heap_rbrp->rb_node = left;
 }
 
-static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link)
-{
-    /* Set node's parent and color
-     * Default color of new node is red (0) */
-    rb_set_parent(node, parent);
-    rb_set_red(node);
-
-    node->rb_lChild = node->rb_rChild = NULL;
-    /* Set relationship between parent and child,
-     * rb_link could be *rb_lChild or *rb_rChild */
-    *rb_link = node;
-}
-
 static void rb_insert_adjust(node_t* node)
 {
     node_t *parent, *gparent;
 
     /* Adjust position and color while color of the node's parent is red */
-    while ((parent = rb_parent(node)) && rb_is_red(parent))
+    while ((parent = node->rb_parent) && parent->rb_color == RB_RED)
     {
         /* gparent won't be NULL, because color of parent is red
          * which means parent isn't root node */
-        gparent = rb_parent(parent);
+        gparent = parent->rb_parent;
         assert(gparent);
 
 #ifdef DEBUG
@@ -481,7 +438,7 @@ static void rb_insert_adjust(node_t* node)
              * change color of gparent/parent/uncle */
             {
                 node_t* uncle;
-                if ((uncle = gparent->rb_rChild) && rb_is_red(uncle))
+                if ((uncle = gparent->rb_rChild) && uncle->rb_color == RB_RED)
                 {
 
 #ifdef DEBUG
@@ -495,9 +452,9 @@ static void rb_insert_adjust(node_t* node)
                         (size_t)gparent, (size_t)parent, (size_t)uncle);
 #endif
 
-                    rb_set_red(gparent);
-                    rb_set_black(parent);
-                    rb_set_black(uncle);
+                    gparent->rb_color = RB_RED;
+                    parent->rb_color = RB_BLACK;
+                    uncle->rb_color = RB_BLACK;
                     node = gparent;
                     continue;
                 }
@@ -542,8 +499,9 @@ static void rb_insert_adjust(node_t* node)
             /* Case 5: LL with red parent,
              * exchange colors of parent and gparent
              * and right rotate gparent */
-            rb_set_red(gparent);
-            rb_set_black(parent);
+
+            gparent->rb_color = RB_RED;
+            parent->rb_color = RB_BLACK;
             rb_right_rotate(gparent);
         }
         /* Mirrored situation */
@@ -553,7 +511,7 @@ static void rb_insert_adjust(node_t* node)
              * change color of gparent/parent/uncle */
             {
                 node_t* uncle;
-                if ((uncle = gparent->rb_lChild) && rb_is_red(uncle))
+                if ((uncle = gparent->rb_lChild) && uncle->rb_color == RB_RED)
                 {
 
 #ifdef DEBUG
@@ -567,9 +525,9 @@ static void rb_insert_adjust(node_t* node)
                         (size_t)gparent, (size_t)parent, (size_t)uncle);
 #endif
 
-                    rb_set_red(gparent);
-                    rb_set_black(parent);
-                    rb_set_black(uncle);
+                    gparent->rb_color = RB_RED;
+                    parent->rb_color = RB_BLACK;
+                    uncle->rb_color = RB_BLACK;
                     node = gparent;
                     continue;
                 }
@@ -613,26 +571,56 @@ static void rb_insert_adjust(node_t* node)
             /* Case 5: RR with red parent,
              * exchange colors of parent and gparent
              * and left rotate gparent */
-            rb_set_red(gparent);
-            rb_set_black(parent);
+            gparent->rb_color = RB_RED;
+            parent->rb_color = RB_BLACK;
             rb_left_rotate(gparent);
         }
     }
-    rb_set_black(heap_rbrp->rb_node);
+    heap_rbrp->rb_node->rb_color = RB_BLACK;
 }
 
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
 {
     assert(cur_node);
 
-    size_t cur_size = GET_SIZE(HDRP(cur_node));
+    size_t cur_size = cur_node->rb_size;
 
 #ifdef DEBUG
     printf("            cur_address = %lx, cur_size = %lu\n", (size_t)cur_node,
         cur_size);
 #endif
 
-    if (asize < cur_size)
+    if (asize == cur_size)
+    {
+
+#ifdef DEBUG
+        printf("            Set insert_node as successor of cur_node\n");
+#endif
+        node->rb_color = cur_node->rb_color;
+        node->rb_size = cur_node->rb_size;
+        node->rb_parent = cur_node->rb_parent;
+        node->rb_lChild = cur_node->rb_lChild;
+        node->rb_rChild = cur_node->rb_rChild;
+        node->rb_prev = cur_node;
+        cur_node->rb_succ = node;
+        node->rb_succ = NULL;
+
+        node_t *parent, *left, *right;
+
+        if ((parent = node->rb_parent))
+        {
+            if (cur_node == parent->rb_lChild)
+                parent->rb_lChild = node;
+            else
+                parent->rb_rChild = node;
+        }
+
+        if ((left = node->rb_lChild))
+            left->rb_parent = node;
+        if ((right = node->rb_rChild))
+            right->rb_parent = node;
+    }
+    else if (asize < cur_size)
         if (cur_node->rb_lChild)
         {
 
@@ -649,7 +637,13 @@ static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
             printf("            Make insert_node be left child of the node\n");
 #endif
 
-            rb_link_node(node, cur_node, &(cur_node->rb_lChild));
+            node->rb_color = RB_RED;
+            node->rb_size = asize;
+            node->rb_parent = cur_node;
+            node->rb_lChild = node->rb_rChild = node->rb_succ = node->rb_prev
+                = NULL;
+            cur_node->rb_lChild = node;
+
             rb_insert_adjust(node);
         }
     else if (cur_node->rb_rChild)
@@ -668,7 +662,13 @@ static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
         printf("            Make insert_node be right child of the node\n");
 #endif
 
-        rb_link_node(node, cur_node, &(cur_node->rb_rChild));
+        node->rb_color = RB_RED;
+        node->rb_size = asize;
+        node->rb_parent = cur_node;
+        node->rb_lChild = node->rb_rChild = node->rb_succ = node->rb_prev
+            = NULL;
+        cur_node->rb_lChild = node;
+
         rb_insert_adjust(node);
     }
 }
@@ -677,7 +677,7 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
 {
     node_t* sibling;
 
-    while ((!node || rb_color(node) == RB_BLACK) && node != heap_rbrp->rb_node)
+    while ((!node || node->rb_color == RB_BLACK) && node != heap_rbrp->rb_node)
     {
         if (node == parent->rb_lChild)
         {
@@ -690,10 +690,10 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             /* Case 2: Parent is black while sibling is red
              * Exchange colors of parent and sibling,
              * left rotate parent node */
-            if (rb_color(sibling) == RB_RED)
+            if (sibling->rb_color == RB_RED)
             {
-                rb_set_black(sibling);
-                rb_set_red(parent);
+                sibling->rb_color = RB_BLACK;
+                parent->rb_color = RB_RED;
                 rb_left_rotate(parent);
                 sibling = parent->rb_rChild;
             }
@@ -701,13 +701,13 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             /* Case 3 & Case 4: Sibling's children are all black,
              * Set sibling red and adjust from parent */
             if ((!sibling->rb_lChild
-                    || rb_color(sibling->rb_lChild) == RB_BLACK)
+                    || sibling->rb_lChild->rb_color == RB_BLACK)
                 && (!sibling->rb_rChild
-                       || rb_color(sibling->rb_rChild) == RB_BLACK))
+                       || sibling->rb_rChild->rb_color == RB_BLACK))
             {
-                rb_set_red(sibling);
+                sibling->rb_color = RB_RED;
                 node = parent;
-                parent = rb_parent(node);
+                parent = node->rb_parent;
             }
             else
             {
@@ -715,12 +715,12 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                  * exchange colors of sibling and its left child,
                  * and then right rotate to make it Case 6 */
                 if (!sibling->rb_rChild
-                    || rb_color(sibling->rb_rChild) == RB_BLACK)
+                    || sibling->rb_rChild->rb_color == RB_BLACK)
                 {
                     node_t* sibling_left;
                     if ((sibling_left = sibling->rb_lChild))
-                        rb_set_black(sibling_left);
-                    rb_set_red(sibling);
+                        sibling_left->rb_color = RB_BLACK;
+                    sibling->rb_color = RB_RED;
                     rb_right_rotate(sibling);
                     sibling = parent->rb_rChild;
                 }
@@ -729,11 +729,11 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                  * exchange colors of sibling and parent,
                  * set parent and sibling's right child black,
                  * left rotate and then stop sdjusting */
-                rb_set_color(sibling, rb_color(parent));
-                rb_set_black(parent);
+                sibling->rb_color = parent->rb_color;
+                parent->rb_color = RB_BLACK;
 
                 if (sibling->rb_rChild)
-                    rb_set_black(sibling->rb_rChild);
+                    sibling->rb_rChild->rb_color = RB_BLACK;
 
                 rb_left_rotate(parent);
 
@@ -752,10 +752,10 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             /* Case 2: Parent is black while sibling is red
              * Exchange colors of parent and sibling,
              * right rotate parent node */
-            if (rb_color(sibling) == RB_RED)
+            if (sibling->rb_color == RB_RED)
             {
-                rb_set_black(sibling);
-                rb_set_red(parent);
+                sibling->rb_color = RB_BLACK;
+                parent->rb_color = RB_RED;
                 rb_right_rotate(parent);
                 sibling = parent->rb_lChild;
             }
@@ -763,27 +763,27 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             /* Case 3 & Case 4: Sibling's children are all black,
              * Set sibling red and adjust from parent */
             if ((!sibling->rb_lChild
-                    || rb_color(sibling->rb_lChild) == RB_BLACK)
+                    || sibling->rb_lChild->rb_color == RB_BLACK)
                 && (!sibling->rb_rChild
-                       || rb_color(sibling->rb_rChild) == RB_BLACK))
+                       || sibling->rb_rChild->rb_color == RB_BLACK))
             {
-                rb_set_red(sibling);
+                sibling->rb_color = RB_RED;
                 node = parent;
-                parent = rb_parent(node);
+                parent = node->rb_parent;
             }
             else
             {
                 /* Case 5: Sibling's right child is red,
                  * exchange colors of sibling and its right child,
-                 *continueremoge555 and then left rotate to make it Case 6
+                 *continue and then left rotate to make it Case 6
                  */
                 if (!sibling->rb_lChild
-                    || rb_color(sibling->rb_lChild) == RB_BLACK)
+                    || sibling->rb_lChild->rb_color == RB_BLACK)
                 {
                     node_t* sibling_right;
                     if ((sibling_right = sibling->rb_rChild))
-                        rb_set_black(sibling_right);
-                    rb_set_red(sibling);
+                        sibling_right->rb_color = RB_BLACK;
+                    sibling->rb_color = RB_RED;
                     rb_left_rotate(sibling);
                     sibling = parent->rb_lChild;
                 }
@@ -792,11 +792,11 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
                  * exchange colors of sibling and parent,
                  * set parent and sibling's left child black,
                  * right rotate and then stop sdjusting */
-                rb_set_color(sibling, rb_color(parent));
-                rb_set_black(parent);
+                sibling->rb_color = parent->rb_color;
+                parent->rb_color = RB_BLACK;
 
                 if (sibling->rb_lChild)
-                    rb_set_black(sibling->rb_lChild);
+                    sibling->rb_lChild->rb_color = RB_BLACK;
 
                 rb_right_rotate(parent);
 
@@ -806,7 +806,7 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
     }
 
     if (node)
-        rb_set_black(node);
+        node->rb_color = RB_BLACK;
 }
 
 static void rb_delete_node(node_t* node)
@@ -814,8 +814,42 @@ static void rb_delete_node(node_t* node)
 
 #ifdef DEBUG
     printf("            Deleting rbtn_blk  address = %lx, size = %lu\n",
-        (size_t)node, (size_t)GET_SIZE(HDRP(node)));
+        (size_t)node, node->rb_size);
 #endif
+
+    node_t* tmp_node = node->rb_prev;
+
+!!!!!consider calling from coalesce
+
+
+    if (tmp_node)
+    {
+        tmp_node->rb_color = node->rb_color;
+        tmp_node->rb_size = node->rb_size;
+        tmp_node->rb_parent = node->rb_parent;
+        tmp_node->rb_lChild = node->rb_lChild;
+        tmp_node->rb_rChild = node->rb_rChild;
+
+        node_t* parent = tmp_node->rb_parent;
+        if (parent)
+        {
+            if (node == parent->rb_lChild)
+                parent->rb_lChild = tmp_node;
+            else
+                parent->rb_rChild = tmp_node;
+        }
+
+        node_t* left = tmp_node->rb_lChild;
+        if (left)
+            left->rb_parent = tmp_node;
+        node_t* right = tmp_node->rb_rChild;
+        if (right)
+            right->rb_parent = tmp_node;
+
+        tmp_node->rb_succ = NULL;
+
+        return;
+    }
 
     node_t *parent, *child;
     int color;
@@ -832,7 +866,7 @@ static void rb_delete_node(node_t* node)
     else
     {
         node_t *old = node, *tmp;
-        node_t* old_parent = rb_parent(old);
+        node_t* old_parent = old->rb_parent;
         node_t* old_left = old->rb_lChild;
 
         /* Look for successor of node */
@@ -842,13 +876,13 @@ static void rb_delete_node(node_t* node)
 
         /* Save successor's information */
         child = node->rb_rChild;
-        parent = rb_parent(node);
-        color = rb_color(node);
+        parent = node->rb_parent;
+        color = node->rb_color;
 
         /* Set the relationship between successor's right child
          * and its parent */
         if (child)
-            rb_set_parent(child, parent);
+            child->rb_parent = parent;
         if (node == parent->rb_lChild)
             parent->rb_lChild = child;
         else
@@ -857,12 +891,12 @@ static void rb_delete_node(node_t* node)
         /* If successor is right child of the node to be deleted,
          * make sure the relationship between successor and its child
          * being set correctly */
-        if (rb_parent(node) == old)
+        if (node->rb_parent == old)
             parent = node;
 
         /* Exchange the position of node to be deleted and successor */
-        rb_set_parent(node, old_parent);
-        rb_set_color(node, rb_color(old));
+        node->rb_parent = old_parent;
+        node->rb_color = old->rb_color;
         node->rb_lChild = old->rb_lChild;
         node->rb_rChild = old->rb_rChild;
 
@@ -885,9 +919,9 @@ static void rb_delete_node(node_t* node)
 #endif
         }
 
-        rb_set_parent(old_left, node);
+        old_left->rb_parent = node;
         if (old->rb_rChild)
-            rb_set_parent(old->rb_rChild, node);
+            old->rb_rChild->rb_parent = node;
 
         /* If the color of moved node is black,
          * the rb_tree need further adjustment */
@@ -895,14 +929,13 @@ static void rb_delete_node(node_t* node)
             rb_delete_adjust(child, parent);
         return;
     }
-
-    parent = rb_parent(node);
-    color = rb_color(node);
+    parent = node->rb_parent;
+    color = node->rb_color;
 
     /* Set the relationship between successor's child
      * and its parent if necessary */
     if (child)
-        rb_set_parent(child, parent);
+        child->rb_parent = parent;
 
     if (parent)
     {
@@ -934,6 +967,7 @@ static void seg_delete_blk(char* bp)
 
     offset_t cur_suc_os = seg_successor_offset(bp),
              cur_pre_os = seg_prev_offset(bp);
+
 #ifdef DEBUG
     printf("            Deleting seg_blk  address = %lx, size = %lu\n",
         (size_t)bp, asize);
@@ -979,13 +1013,13 @@ static node_t* find_fit_rbtn(node_t* cur_node, size_t asize)
     if (!cur_node)
         return NULL;
 
-    size_t tsize = GET_SIZE(HDRP(cur_node));
+    size_t cur_size = cur_node->rb_size;
 
 #ifdef DEBUG
-    printf("            cur_size = %lu\n", tsize);
+    printf("            cur_size = %lu\n", cur_size);
 #endif
 
-    if (asize == tsize)
+    if (asize == cur_size)
     {
 
 #ifdef DEBUG
@@ -996,7 +1030,7 @@ static node_t* find_fit_rbtn(node_t* cur_node, size_t asize)
         return cur_node;
     }
 
-    if (asize > tsize)
+    if (asize > cur_size)
     {
 
 #ifdef DEBUG
@@ -1081,14 +1115,16 @@ static void place_blk(char* bp, size_t asize)
         if (!heap_rbrp->rb_node)
         {
             heap_rbrp->rb_node = (node_t*)bp;
-            heap_rbrp->rb_node->rb_parent_color = (size_t)0;
-            rb_set_black(heap_rbrp->rb_node);
-            heap_rbrp->rb_node->rb_lChild = NULL;
-            heap_rbrp->rb_node->rb_rChild = NULL;
+            node_t* root = (node_t*)bp;
+            root->rb_color = RB_BLACK;
+            root->rb_size = asize;
+            root->rb_parent = root->rb_lChild = root->rb_rChild = root->rb_succ
+                = root->rb_prev = NULL;
 
 #ifdef DEBUG
-            printf("        Initialize red-black tree root  address = %lx\n",
-                (size_t)heap_rbrp->rb_node);
+            printf("        Initialize red-black tree root  address = %lx, "
+                   "size = %lu\n",
+                (size_t)heap_rbrp->rb_node, heap_rbrp->rb_node->rb_size);
 #endif
         }
         else
