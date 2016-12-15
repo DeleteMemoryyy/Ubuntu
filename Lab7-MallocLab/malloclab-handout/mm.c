@@ -79,10 +79,10 @@ typedef unsigned int offset_t;
 #define PUT(p, val) (*(unsigned int*)(p) = (val))
 
 /* Get size from address p */
-#define GET_SIZE(p) (GET(p) & ~0x7)
+#define GET_SIZE(p) ((size_t)(GET((p)) & ~0x7))
 
 /* Read size from value */
-#define READ_SIZE(val) ((unsigned int)(val) & ~0x7)
+#define READ_SIZE(val) ((size_t)((unsigned int)(val) & ~0x7))
 
 /* Compute address for header of given block ptr bp */
 #define HDRP(bp) ((char*)(bp)-WSIZE)
@@ -90,7 +90,7 @@ typedef unsigned int offset_t;
 /* Compute address for footer of given block ptr bp */
 #define FTRP(bp) ((char*)(bp) + GET_SIZE(HDRP(bp)))
 
-#define IS_UNALLOCED(info) (((unsigned int)(info)&0x1) == UNALLOCED)
+#define IS_UNALLOCED(info) ((((unsigned int)(info)) & 0x1) == UNALLOCED)
 
 #define IS_SEGB(info) (((unsigned int)(info)&0x2) == TYPE_SEGB)
 
@@ -120,11 +120,11 @@ static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link);
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize);
 static void rb_delete_node(node_t* node);
 static void seg_delete_blk(char* bp);
-static void* find_fit_rbtn(node_t* cur_node, size_t asize);
+static node_t* find_fit_rbtn(node_t* cur_node, size_t asize);
 static char* create_blk(size_t asize);
 static void place_blk(char* bp, size_t asize);
 static void devide_blk(char* bp, size_t asize);
-static void* coalesce_blk(char* bp, size_t asize);
+static void coalesce_blk(char* bp, size_t asize);
 
 /*
  * Initialize: return -1 on error, 0 on success.
@@ -132,7 +132,7 @@ static void* coalesce_blk(char* bp, size_t asize);
 int mm_init(void)
 {
     /* createe the initial empty heap */
-    if ((void*)(heap_rbrp = (root_t*)mem_sbrk(MAXSEGBLKSIZE + 2 * DSIZE + WSIZE))
+    if ((void*)(heap_rbrp = (root_t*)mem_sbrk(MAXSEGBLKSIZE + 2 * DSIZE))
         == (void*)-1)
         return -1;
     heap_st = (char*)heap_rbrp;
@@ -141,18 +141,18 @@ int mm_init(void)
     heap_edsegbp = heap_segbp + MAXSEGBLKSIZE / DSIZE;
     memset(heap_rbrp, 0, (MAXSEGBLKSIZE + DSIZE + WSIZE));
     PUT(heap_edsegbp, PACK(0, 0, ALLOCED));
-    PUT((char*)heap_edsegbp + WSIZE, PACK(0, 0, ALLOCED));
 
 #ifdef DEBUG
     printf("\n\nInitialization finished\n");
-    printf("Current heap bottom = %lu\n", (size_t)mem_heap_lo());
-    printf("Current heap top = %lu\n", (size_t)mem_heap_hi());
+    printf("Current heap bottom = %lx\n", (size_t)mem_heap_lo());
+    printf("Current heap top = %lx\n", (size_t)mem_heap_hi());
     printf("    heap_st:%lx\n", (size_t)heap_st);
     printf("    heap_rbrp:%lx\n", (size_t)heap_rbrp);
     printf("    heap_segbp:%lx\n", (size_t)heap_segbp);
     // printf("    heap_segbp_end_search:%lx\n", (size_t)heap_segbp_end_search);
     printf("    heap_edsegbp:%lx\n", (size_t)heap_edsegbp);
 #endif
+
     return 0;
 }
 
@@ -179,12 +179,13 @@ void* malloc(size_t size)
 #ifdef DEBUG
     printf(
         "\n\nMalloc  requiring size = %lu, adjusted size = %lu\n", size, asize);
-    printf("Current heap bottom = %lu\n", (size_t)mem_heap_lo());
-    printf("Current heap top = %lu\n", (size_t)mem_heap_hi());
+    printf("Current heap bottom = %lx\n", (size_t)mem_heap_lo());
+    printf("Current heap top = %lx\n", (size_t)mem_heap_hi());
 #endif
 
     if (asize <= MAXSEGBLKSIZE)
     {
+
 #ifdef DEBUG
         printf("    Asking for segregated block\n");
 #endif
@@ -194,11 +195,13 @@ void* malloc(size_t size)
         if (p_ptr < heap_edsegbp)
         {
             bp = *p_ptr;
+
 #ifdef DEBUG
             printf("    Found available segregated block  address = %lx, "
-                   "size = %u\n",
+                   "size = %lu\n",
                 (size_t)bp, GET_SIZE(HDRP(bp)));
 #endif
+
             offset_t suc_os = seg_successor_offset(bp);
             if (suc_os)
             {
@@ -213,41 +216,52 @@ void* malloc(size_t size)
             return (void*)bp;
         }
     }
+
 #ifdef DEBUG
     printf("    Asking for red-black tree block\n");
 #endif
 
     node_t* fit_node = find_fit_rbtn(heap_rbrp->rb_node, asize);
+
+#ifdef DEBUG
+    printf("    Search result: address = %lx\n", (size_t)fit_node);
+#endif
+
     if (!fit_node)
     {
-        if (!(bp = create_blk(asize)))
-        {
+
 #ifdef DEBUG
-            printf("!!!Fail to find available block. Go to create_blk\n");
+        printf("    Fail to find available block. Go to create_blk\n");
 #endif
+
+        if (!(bp = create_blk(asize)))
             return NULL;
-        }
+
 #ifdef DEBUG
         printf("    Return block  address = %lx, "
-               "size = %u\n",
+               "size = %lu\n",
             (size_t)bp, GET_SIZE(HDRP(bp)));
 #endif
+
         return (void*)bp;
     }
+
 #ifdef DEBUG
     printf("    Found available red-black tree block  address = %lx, "
-           "size = %u\n",
-        (size_t)bp, GET_SIZE(HDRP(bp)));
+           "size = %lu\n",
+        (size_t)fit_node, GET_SIZE(HDRP(fit_node)));
 #endif
 
     rb_delete_node(fit_node);
     bp = (char*)fit_node;
     devide_blk(bp, asize);
+
 #ifdef DEBUG
     printf("    Return block  address = %lx, "
-           "size = %u\n",
+           "size = %lu\n",
         (size_t)bp, GET_SIZE(HDRP(bp)));
 #endif
+
     return (void*)bp;
 }
 
@@ -261,10 +275,10 @@ void free(void* ptr)
     size_t asize = GET_SIZE(HDRP(ptr));
 
 #ifdef DEBUG
-    printf("\n\nFree  given address = %lu, adjusted size = %lu\n", (size_t)ptr,
+    printf("\n\nFree  given address = %lx, adjusted size = %lu\n", (size_t)ptr,
         asize);
-    printf("Current heap bottom = %lu\n", (size_t)mem_heap_lo());
-    printf("Current heap top = %lu\n", (size_t)mem_heap_hi());
+    printf("Current heap bottom = %lx\n", (size_t)mem_heap_lo());
+    printf("Current heap top = %lx\n", (size_t)mem_heap_hi());
 #endif
 
     coalesce_blk((char*)ptr, asize);
@@ -291,15 +305,16 @@ void* realloc(void* old_ptr, size_t asize)
     old_size = GET_SIZE(HDRP(old_ptr));
 
 #ifdef DEBUG
-    printf("\n\nRealloc  given address = %lu, old_size = %lu, requiring size = "
+    printf("\n\nRealloc  given address = %lx, old_size = %lu, requiring size = "
            "%lu\n",
         (size_t)old_ptr, old_size, asize);
-    printf("Current heap bottom = %lu\n", (size_t)mem_heap_lo());
-    printf("Current heap top = %lu\n", (size_t)mem_heap_hi());
+    printf("Current heap bottom = %lx\n", (size_t)mem_heap_lo());
+    printf("Current heap top = %lx\n", (size_t)mem_heap_hi());
 #endif
 
     if (asize <= old_size)
     {
+
 #ifdef DEBUG
         printf("    Not to change block\n");
 #endif
@@ -308,9 +323,11 @@ void* realloc(void* old_ptr, size_t asize)
     }
     else
     {
+
 #ifdef DEBUG
         printf("    Looking for new block\n");
 #endif
+
         if (!(new_ptr = malloc(asize)))
             return NULL;
 
@@ -318,11 +335,13 @@ void* realloc(void* old_ptr, size_t asize)
 
         free(old_ptr);
     }
+
 #ifdef DEBUG
     printf("    Return block  address = %lx, "
-           "size = %u\n",
+           "size = %lu\n",
         (size_t)new_ptr, GET_SIZE(HDRP(new_ptr)));
 #endif
+
     return new_ptr;
 }
 
@@ -348,8 +367,6 @@ void* calloc(size_t nmemb, size_t size)
 #define rb_color(tn) ((tn)->rb_parent_color & 0x1)
 #define rb_is_red(tn) (!rb_color(tn))
 #define rb_is_black(tn) (rb_color(tn))
-// #define rb_set_red(tn) ((tn)->rb_parent_color &= ~0x1)
-// #define rb_set_black(tn) ((tn)->rb_parent_color |= 0x1)
 
 static inline void rb_set_red(node_t* node)
 {
@@ -372,7 +389,7 @@ static inline void rb_set_parent(node_t* node, node_t* parent)
 
 static inline void rb_set_color(node_t* node, int color)
 {
-    node->rb_parent_color = (node->rb_parent_color & ~0x1) | color;
+    node->rb_parent_color = (node->rb_parent_color & ~0x7) | color;
 }
 
 static void rb_left_rotate(node_t* node)
@@ -432,6 +449,7 @@ static inline void rb_link_node(node_t* node, node_t* parent, node_t** rb_link)
     /* Set node's parent and color
      * Default color of new node is red (0) */
     node->rb_parent_color = (long unsigned int)parent;
+    rb_set_red(node);
 
     node->rb_lChild = node->rb_rChild = NULL;
     /* Set relationship between parent and child,
@@ -449,9 +467,11 @@ static void rb_insert_adjust(node_t* node)
         /* gparent won't be NULL, because color of parent is red
          * which means parent isn't root node */
         gparent = rb_parent(parent);
+        assert(gparent);
 
         if (parent == gparent->rb_lChild)
         {
+
             /* Case 3: If uncle exists and its color is red,
              * change color of gparent/parent/uncle */
             {
@@ -534,20 +554,56 @@ static void rb_insert_adjust(node_t* node)
 static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
 {
     assert(cur_node);
+
+#ifdef DEBUG
+    printf("            Inserting rbtn_blk  insert_address = %lx, insert_size = %lu\n",
+        (size_t)node, asize);
+#endif
+
     size_t cur_size = GET_SIZE(HDRP(cur_node));
+
+#ifdef DEBUG
+    printf("            cur_address = %lx, cur_size = %lu\n", (size_t)cur_node,
+        cur_size);
+#endif
+
     if (asize < cur_size)
         if (cur_node->rb_lChild)
+        {
+
+#ifdef DEBUG
+            printf("            Go to left child\n");
+#endif
+
             rb_insert_node(cur_node->rb_lChild, node, asize);
+        }
         else
         {
+
+#ifdef DEBUG
+            printf("            Make insert_node be left child of the node\n");
+#endif
+
             rb_link_node(node, cur_node, &(cur_node->rb_lChild));
             rb_set_black(node);
             rb_insert_adjust(node);
         }
     else if (cur_node->rb_rChild)
+    {
+
+#ifdef DEBUG
+        printf("            Go to right child\n");
+#endif
+
         rb_insert_node(cur_node->rb_rChild, node, asize);
+    }
     else
     {
+
+#ifdef DEBUG
+        printf("            Make insert_node be right child of the node\n");
+#endif
+
         rb_link_node(node, cur_node, &(cur_node->rb_rChild));
         rb_set_black(node);
         rb_insert_adjust(node);
@@ -656,7 +712,8 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
             {
                 /* Case 5: Sibling's right child is red,
                  * exchange colors of sibling and its right child,
-                 *continueremoge555 and then left rotate to make it Case 6 */
+                 *continueremoge555 and then left rotate to make it Case 6
+                 */
                 if (!sibling->rb_lChild
                     || rb_color(sibling->rb_lChild) == RB_BLACK)
                 {
@@ -691,8 +748,9 @@ static void rb_delete_adjust(node_t* node, node_t* parent)
 
 static void rb_delete_node(node_t* node)
 {
+
 #ifdef DEBUG
-    printf("            Deleting rbtn_blk  address = %lu, size = %lu\n",
+    printf("            Deleting rbtn_blk  address = %lx, size = %lu\n",
         (size_t)node, (size_t)GET_SIZE(HDRP(node)));
 #endif
 
@@ -756,7 +814,13 @@ static void rb_delete_node(node_t* node)
         /* If the node to be deleted is root,
          * make successor new root of the rb_tree */
         else
+        {
             heap_rbrp->rb_node = node;
+#ifdef DEBUG
+            printf("            Changing root  root address = %lx\n",
+                (size_t)heap_rbrp->rb_node);
+#endif
+        }
 
         rb_set_parent(old_left, node);
         if (old->rb_rChild)
@@ -785,7 +849,15 @@ static void rb_delete_node(node_t* node)
             parent->rb_rChild = child;
     }
     else
+    {
+
+#ifdef DEBUG
+        printf(
+            "            Changing root  root address = %lx\n", (size_t)child);
+#endif
+
         heap_rbrp->rb_node = child;
+    }
 
     /* If the color of moved node is black,
      * the rb_tree need further adjustment */
@@ -796,10 +868,12 @@ static void rb_delete_node(node_t* node)
 static void seg_delete_blk(char* bp)
 {
     size_t asize = GET_SIZE(HDRP(bp));
+
 #ifdef DEBUG
-    printf("            Deleting seg_blk  address = %lu, size = %lu\n",
+    printf("            Deleting seg_blk  address = %lx, size = %lu\n",
         (size_t)bp, asize);
 #endif
+
     offset_t cur_suc_os = seg_successor_offset(bp),
              cur_pre_os = seg_prev_offset(bp);
     if (cur_suc_os)
@@ -815,8 +889,6 @@ static void seg_delete_blk(char* bp)
     else
     {
         char** p_ptr = heap_segbp + asize / DSIZE - 1;
-        // while(p_ptr != heap_segbp_end_search && *p_ptr != bp)
-        //     --p_ptr;
         assert(*p_ptr == bp);
 
         if (cur_pre_os)
@@ -830,70 +902,140 @@ static void seg_delete_blk(char* bp)
     }
 }
 
-static void* find_fit_rbtn(node_t* cur_node, size_t asize)
+static node_t* find_fit_rbtn(node_t* cur_node, size_t asize)
 {
+
+#ifdef DEBUG
+    printf("            Looking for suitable block in red-black tree\n");
+    printf("            requiring size = %lu, cur_address = %lx\n", asize,
+        (size_t)cur_node);
+#endif
+
     if (!cur_node)
         return NULL;
 
     size_t tsize = GET_SIZE(HDRP(cur_node));
+
+#ifdef DEBUG
+    printf("            cur_size = %lu\n", tsize);
+#endif
+
     if (asize == tsize)
+    {
+
+#ifdef DEBUG
+        printf("            Return current node  address = %lx\n",
+            (size_t)cur_node);
+#endif
+
         return cur_node;
+    }
+
     if (asize > tsize)
+    {
+
+#ifdef DEBUG
+        printf("            Go to right child\n");
+#endif
+
         return find_fit_rbtn(cur_node->rb_rChild, asize);
+    }
 
     node_t* tmp_node;
+
+#ifdef DEBUG
+    printf("            Go to left child\n");
+#endif
+
     if ((tmp_node = find_fit_rbtn(cur_node->rb_lChild, asize)))
         return tmp_node;
+
+#ifdef DEBUG
+    printf("            Fail to find smaller node, return current node\n");
+    printf("            Returning address = %lx\n", (size_t)cur_node);
+
+#endif
+
     return cur_node;
 }
 
 static char* create_blk(size_t asize)
 {
+
 #ifdef DEBUG
     printf("        Creating block  requiring size = %lu\n", asize);
 #endif
+
     char* bp;
-    if ((long)(bp = mem_sbrk(asize + DSIZE)) == -1)
+    if ((void*)(bp = mem_sbrk(asize + DSIZE)) == (void*)-1)
     {
+
 #ifdef DEBUG
         printf("!!!mem_sbrk failed\n");
 #endif
+
         return NULL;
     }
 
 #ifdef DEBUG
-    printf(
-        "        Creating successfully  address = %lx, adjusted size = %lu\n",
-        (size_t)(bp + WSIZE), asize);
+    printf("        Creating successfully  address = %lx, adjusted size = "
+           "%lu\n",
+        (size_t)bp, asize);
 #endif
 
-    PUT(bp, PACK(asize, 0, ALLOCED));
-    PUT((bp + asize + WSIZE), PACK(asize, 0, ALLOCED));
+    PUT(HDRP(bp), PACK(asize, 0, ALLOCED));
+    PUT(bp + asize, PACK(asize, 0, ALLOCED));
+    PUT(bp + asize + WSIZE, PACK(0, 0, ALLOCED));
 
-    return bp + WSIZE;
+#ifdef DEBUG
+    printf("        Set new block  header = %u, footer = %u, default = %u\n",
+        GET(HDRP(bp)), GET(bp + asize), GET(bp + asize + WSIZE));
+#endif
+
+    return bp;
 }
 
 static void place_blk(char* bp, size_t asize)
 {
     assert(asize >= DSIZE);
+
 #ifdef DEBUG
-    printf("        Placing block  address = %lu, size = %lu\n", (size_t)bp,
+    printf("        Placing block  address = %lx, size = %lu\n", (size_t)bp,
         asize);
 #endif
+
     if (asize > MAXSEGBLKSIZE)
     {
+
 #ifdef DEBUG
         printf("        Block type = rbtn_blk\n");
 #endif
+
         PUT(HDRP(bp), PACK(asize, TYPE_RBTN, UNALLOCED));
         PUT(bp + asize, PACK(asize, TYPE_RBTN, UNALLOCED));
-        rb_insert_node(heap_rbrp->rb_node, (node_t*)(bp), asize);
+        if (!heap_rbrp->rb_node)
+        {
+            heap_rbrp->rb_node = (node_t*)bp;
+            heap_rbrp->rb_node->rb_parent_color = (size_t)0;
+            rb_set_black(heap_rbrp->rb_node);
+            heap_rbrp->rb_node->rb_lChild = NULL;
+            heap_rbrp->rb_node->rb_rChild = NULL;
+
+#ifdef DEBUG
+            printf("        Initialize red-black tree root  address = %lx\n",
+                (size_t)heap_rbrp->rb_node);
+#endif
+        }
+        else
+            rb_insert_node(heap_rbrp->rb_node, (node_t*)(bp), asize);
     }
     else
     {
+
 #ifdef DEBUG
         printf("        Block type = seg_blk\n");
 #endif
+
         PUT(HDRP(bp), PACK(asize, TYPE_SEGB, UNALLOCED));
         PUT(bp + asize, PACK(asize, TYPE_SEGB, UNALLOCED));
         char** p_ptr = heap_segbp + asize / DSIZE - 1;
@@ -914,35 +1056,59 @@ static void place_blk(char* bp, size_t asize)
 
 static void devide_blk(char* bp, size_t asize)
 {
-    size_t rest_size = GET_SIZE(HDRP(bp)) - asize;
+    size_t old_size = GET_SIZE(HDRP(bp));
+    size_t rest_size = old_size - asize;
+
     if (rest_size < MINBLKSIZE)
-        return;
+    {
+
 #ifdef DEBUG
-    printf("        Deviding block  asize = %lu, bsize = %lu\n", asize,
-        rest_size - 8);
+        printf("        Not to devide block\n");
 #endif
-    PUT(bp, PACK(asize, 0, ALLOCED));
-    PUT(bp + asize, PACK(asize, 0, ALLOCED));
-    place_blk(bp + asize + DSIZE, rest_size - DSIZE);
+
+        PUT(HDRP(bp), PACK(old_size, 0, ALLOCED));
+        PUT(bp + old_size, PACK(old_size, 0, ALLOCED));
+    }
+    else
+    {
+
+#ifdef DEBUG
+        printf("        Deviding block  asize = %lu, bsize = %lu\n", asize,
+            rest_size - 8);
+#endif
+
+        PUT(HDRP(bp), PACK(asize, 0, ALLOCED));
+        PUT(bp + asize, PACK(asize, 0, ALLOCED));
+
+        place_blk(bp + asize + DSIZE, rest_size - DSIZE);
+    }
 }
 
-static void* coalesce_blk(char* bp, size_t asize)
+static void coalesce_blk(char* bp, size_t asize)
 {
     unsigned int prev_info = GET(bp - DSIZE),
-                 next_info = ((long unsigned int)(bp + asize + WSIZE)
-                                 <= (long unsigned int)mem_heap_hi())
-        ? (GET(bp + asize + WSIZE))
-        : ALLOCED;
+                 next_info = GET(bp + asize + WSIZE);
+
+#ifdef DEBUG
+    printf("        Decide to coalesce or not  cur_address = %lx, "
+           "cur_size = %lu\n",
+        (size_t)bp, asize);
+    printf("        prev_info = %u, next_info = %u\n", prev_info, next_info);
+#endif
 
     if (IS_UNALLOCED(next_info))
     {
-        asize += READ_SIZE(next_info) + DSIZE;
         char* next_ptr = bp + asize + DSIZE;
+
+        asize += READ_SIZE(next_info) + DSIZE;
+
 #ifdef DEBUG
-        printf("        Coalescing block with next  cur_address = %lu, "
-               "cur_size = %lu\n",
-            (size_t)bp, asize);
+        printf("        Coalescing block with next  next_address = %lx, "
+               "next_size = %lu\n",
+            (size_t)next_ptr, READ_SIZE(next_info));
+        printf("        cur_size changed to %lu\n", asize);
 #endif
+
         if (IS_SEGB(next_info))
             seg_delete_blk(next_ptr);
         else
@@ -954,11 +1120,15 @@ static void* coalesce_blk(char* bp, size_t asize)
         size_t prev_size = READ_SIZE(prev_info);
         asize += prev_size + DSIZE;
         bp -= (prev_size + DSIZE);
+
 #ifdef DEBUG
-        printf("        Coalescing block with prev  cur_address = %lu, "
-               "cur_size = %lu\n",
+        printf("        Coalescing block with prev  prev_address = %lx, "
+               "prev_size = %lu\n",
+            (size_t)bp, asize);
+        printf("        cur_address changed to %lx, cur_size changed to %lu\n",
             (size_t)bp, asize);
 #endif
+
         if (IS_SEGB(prev_info))
             seg_delete_blk(bp);
         else
@@ -966,8 +1136,6 @@ static void* coalesce_blk(char* bp, size_t asize)
     }
 
     place_blk(bp, asize);
-
-    return (void*)bp;
 }
 
 /*

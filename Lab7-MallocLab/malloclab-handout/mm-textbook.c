@@ -71,6 +71,10 @@ int mm_init(void)
     /* Create the initial empty heap */
     if ((heap_listp = mem_sbrk(4 * WSIZE)) == (void*)-1)
         return -1;
+    printf("\n\nInitialization finished\n");
+    printf("Current heap bottom = %lu\n", (size_t)mem_heap_lo());
+    printf("Current heap top = %lu\n", (size_t)mem_heap_hi());
+    printf("    heap_listp:%lx\n", (size_t)heap_listp);
     PUT(heap_listp, 0); /* Alignment padding */
     PUT(heap_listp + (1 * WSIZE), PACK(DSIZE, 1)); /* Prologue header */
     PUT(heap_listp + (2 * WSIZE), PACK(DSIZE, 1)); /* Prologue footer */
