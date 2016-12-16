@@ -604,6 +604,8 @@ static void rb_insert_node(node_t* cur_node, node_t* node, size_t asize)
         node->rb_prev = cur_node;
         cur_node->rb_succ = node;
         node->rb_succ = NULL;
+        if (heap_rbrp->rb_node == cur_node)
+            heap_rbrp->rb_node = node;
 
         node_t *parent, *left, *right;
 
@@ -817,39 +819,52 @@ static void rb_delete_node(node_t* node)
         (size_t)node, node->rb_size);
 #endif
 
-    node_t* tmp_node = node->rb_prev;
-
-!!!!!consider calling from coalesce
-
-
-    if (tmp_node)
+    node_t *pre_node = node->rb_prev, *suc_node = node->rb_succ;
+    if (pre_node || suc_node)
     {
-        tmp_node->rb_color = node->rb_color;
-        tmp_node->rb_size = node->rb_size;
-        tmp_node->rb_parent = node->rb_parent;
-        tmp_node->rb_lChild = node->rb_lChild;
-        tmp_node->rb_rChild = node->rb_rChild;
 
-        node_t* parent = tmp_node->rb_parent;
-        if (parent)
+#ifdef DEBUG
+        printf("            The block isn't the only block in this node\n");
+#endif
+
+        if (suc_node)
+            suc_node->rb_prev = pre_node;
+        else
         {
-            if (node == parent->rb_lChild)
-                parent->rb_lChild = tmp_node;
-            else
-                parent->rb_rChild = tmp_node;
+#ifdef DEBUG
+            printf("            The block is the last block in the node\n");
+            printf("            Change the tail of this node, prev_address = %lu\n",(size_t)pre_node);
+#endif
+            node_t *parent = node->rb_parent, *left = node->rb_lChild,
+                   *right = node->rb_rChild;
+
+            pre_node->rb_color = node->rb_color;
+            pre_node->rb_size = node->rb_size;
+            pre_node->rb_parent = parent;
+            if (parent)
+            {
+                if (node == parent->rb_lChild)
+                    parent->rb_lChild = pre_node;
+                else
+                    parent->rb_rChild = pre_node;
+            }
+            pre_node->rb_lChild = left;
+            if (left)
+                left->rb_parent = pre_node;
+            pre_node->rb_rChild = right;
+            if (right)
+                right->rb_parent = pre_node;
+            if (heap_rbrp->rb_node == node)
+                heap_rbrp->rb_node = pre_node;
         }
-
-        node_t* left = tmp_node->rb_lChild;
-        if (left)
-            left->rb_parent = tmp_node;
-        node_t* right = tmp_node->rb_rChild;
-        if (right)
-            right->rb_parent = tmp_node;
-
-        tmp_node->rb_succ = NULL;
-
+        if (pre_node)
+            pre_node->rb_succ = suc_node;
         return;
     }
+
+#ifdef DEBUG
+        printf("            The block is the only block in this node, delete the node\n");
+#endif
 
     node_t *parent, *child;
     int color;
@@ -1016,7 +1031,8 @@ static node_t* find_fit_rbtn(node_t* cur_node, size_t asize)
     size_t cur_size = cur_node->rb_size;
 
 #ifdef DEBUG
-    printf("            cur_size = %lu\n", cur_size);
+    printf("            cur_size = %lu,cur_color = %lu\n", cur_size,
+        cur_node->rb_color);
 #endif
 
     if (asize == cur_size)
