@@ -3,13 +3,62 @@
  *
  * Liu DeXin    1500017704@pku.edu.cn
  *
- * 
- * 
+ * Using segregated block list and red-black tree structure to store block
+ * information.
  *
+ * Block consitence:
  *
+ *  alloced block:
+ *          ＋———————————————————————————＋
+ *          | header | playload | footer |
+ *          ＋———————————————————————————＋
  *
- * 
+ *          size of header and footer: 4bytes
+ *          size of playload: >= 8bytes
+ *
+ *  unalloced block:
+ *
+ *       segregated block:
+ *          ＋———————————————————————————————————————————————————————＋
+ *          | header | offset_succ | offset_prev |          | footer |
+ *          ＋———————————————————————————————————————————————————————＋
+ *
+ *          size of header and footer: 4bytes
+ *          size of offset: 4bytes
+ *
+ *       red-black tree node block:
+ *          ＋——————————————————————————————————————————————————＋
+ *          | header | red_black tree node |           | footer |
+ *          ＋——————————————————————————————————————————————————＋
+ *
+ *          size of header and footer: 4bytes
+ *          size of red_black tree node: 48bytes
+ *
+ * Consitence of header and footer:
+ *
+ *           ＋———————————————————————————————————————————————————————＋
+ *          |             size          | check_mark | type | alloced |
+ *          ＋———————————————————————————————————————————————————————＋
+ *                      31 ~ 3                 2         1       0
+ *
+ * Strategy:
+ *
+ * Blocks whose size >= MAXSEGBLKSIZE will be placed in red-black tree, while
+ * others will be placed in segregated block list.
+ *
+ * Blocks in red-black tree with same size will be placed in the same node by
+ *linklist.
+ *
+ * Segregated block lists are distinguished with size by every 8bytes.
+ *
+ * Every time asking for an unalloced block will try to find the
+ *fittest(smallest available) one, and divide it into requisite size.
+ *
+ * Try to coalesce previous and next block every time after producing a new
+ *unalloced block.
+ *
  */
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,7 +133,7 @@ typedef struct rb_root_t root_t;
 
 /* Max size of segregated block (bytes)
  * while is same as the size of tail pointer of segregated block
- * link array 
+ * link array
  */
 #define MAXSEGBLKSIZE 0x30
 
@@ -195,7 +244,7 @@ int mm_init(void)
 }
 
 /*
- * malloc
+ * malloc: return NULL on error, other address on success.
  *
  * Look for available unalloced block while depending on different requisite
  * size.
@@ -373,7 +422,7 @@ void free(void* ptr)
 }
 
 /*
- * realloc
+ * realloc: return NULL on error, other addres on success.
  *
  * First judge if necessary to look for a new unalloced block by comparing
  * old_size and requisite size.
@@ -515,7 +564,7 @@ void* realloc(void* old_ptr, size_t asize)
 }
 
 /*
- * calloc
+ * calloc: return NULL on error, other address on success.
  *
  * Alloc a available by calling malloc. Then initlize data block by calling
  * memset.
@@ -1671,7 +1720,7 @@ static int aligned(const void* p) { return (size_t)ALIGN(p) == (size_t)p; }
 #define CHK_IS_UNALLOCED(bp) ((GET((bp)) & 0x1) == UNALLOCED)
 #define CHK_IS_MARKED(bp) ((GET((bp)) & 0x4) == MARKED)
 #define CHK_IS_UNMARKED(bp) ((GET((bp)) & 0x4) == UNALLOCED)
-inline void CHK_REVERSE_MARK(char* bp)
+static inline void CHK_REVERSE_MARK(char* bp)
 {
     unsigned int info = GET(bp);
     PUT(bp, (info ^ 0x4));
@@ -1692,7 +1741,7 @@ inline void CHK_REVERSE_MARK(char* bp)
  *     if the offset of successor and prev block correct
  *
  */
-void seg_check_blocklist(char* bp, size_t asize)
+static void seg_check_blocklist(char* bp, size_t asize)
 {
 
     assert(asize >= MINBLKSIZE && asize <= MAXSEGBLKSIZE);
@@ -1750,7 +1799,7 @@ void seg_check_blocklist(char* bp, size_t asize)
  *     if the pointer of successor and prev block correct
  *
  */
-void rb_check_blocklist(node_t* node, size_t asize)
+static void rb_check_blocklist(node_t* node, size_t asize)
 {
     assert(asize > MAXSEGBLKSIZE);
 
@@ -1801,7 +1850,7 @@ void rb_check_blocklist(node_t* node, size_t asize)
  *     if the numbers of blackheight calculated from two child are same
  *
  */
-size_t rb_check_node(node_t* node)
+static size_t rb_check_node(node_t* node)
 {
     rb_check_blocklist(node, node->rb_size);
 
