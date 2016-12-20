@@ -10,11 +10,11 @@
  *
  *  alloced block:
  *          ＋———————————————————————————＋
- *          | header | playload | footer |
+ *          | header | payload | footer |
  *          ＋———————————————————————————＋
  *
  *          size of header and footer: 4bytes
- *          size of playload: >= 8bytes
+ *          size of payload: >= 8bytes
  *
  *  unalloced block:
  *
@@ -36,9 +36,9 @@
  *
  * Consitence of header and footer:
  *
- *           ＋———————————————————————————————————————————————————————＋
+ *          ＋————————————————————————————————————————————————————————＋
  *          |             size          | check_mark | type | alloced |
- *          ＋———————————————————————————————————————————————————————＋
+ *          ＋————————————————————————————————————————————————————————＋
  *                      31 ~ 3                 2         1       0
  *
  * Strategy:
