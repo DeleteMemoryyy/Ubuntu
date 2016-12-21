@@ -1089,12 +1089,7 @@ static void rb_insert_adjust(node_t* node)
                 /* Exchange node and parent to make they get
                      * correct meanings */
                 node_t* tmp_node = parent;
-                /*
- * rb_insert_adjust
- *
- * Red-black tree adjusting operation: adjust after inserting a new node.
- *
- */ parent = node;
+                parent = node;
                 node = tmp_node;
             }
 
