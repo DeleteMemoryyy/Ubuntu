@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
     /* Ignore SIGPIPE signal */
     Signal(SIGPIPE, SIG_IGN);
-    Signal(SIGALRM,SIG_IGN);
+    Signal(SIGALRM, SIG_IGN);
 
     int listenfd, *connfdp;
     socklen_t clientlen;
@@ -126,7 +126,7 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
     if (rio_readlineb(rp, ori_request, MAXLINE) < 0)
     {
         clienterror(clientfd, "GET", "400", "Bad Request",
-            "Proxy can't prase the request");
+            "Proxy couldn't prase the request");
         return 1;
     }
 
@@ -148,6 +148,8 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
     if (parse_uri(uri, request->host, pathname, request->port))
     {
         dbg_printf("Parse uri error\n");
+        clienterror(
+            clientfd, "GET", "400", "Bad Request", "Proxy couldn't prase the uri");
         return 3;
     }
 
@@ -158,6 +160,8 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
     if (read_requesthdrs(rp, request))
     {
         dbg_printf("Read request error\n");
+        clienterror(clientfd, "GET", "400", "Bad Request",
+            "Proxy couldn't prase the request");
         return 3;
     }
 
@@ -267,13 +271,23 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
     rio_t ser_rio;
     char buf[MAXLINE];
 
-    serverfd = Open_clientfd(request->host, request->port);
+    if ((serverfd = Open_clientfd(request->host, request->port)) < 0)
+    {
+        clienterror(clientfd, "GET", "502", "Bad Gate",
+            "Proxy couldn't' connect to server");
+        return -1;
+    }
 
     Rio_readinitb(&ser_rio, serverfd);
 
     memset(object_buf, 0, MAX_OBJECT_SIZE);
 
-    Rio_writen(serverfd, request->content, sizeof(request->content));
+    if ((rio_writen(serverfd, request->content, sizeof(request->content))) < 0)
+    {
+        clienterror(clientfd, "GET", "502", "Bad Gate",
+            "Proxy couldn't receive massage from server");
+        return -1;
+    }
 
     memset(buf, 0, sizeof(buf));
     while ((len = rio_readnb(&ser_rio, buf, sizeof(buf))) > 0)
@@ -281,7 +295,12 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
         object_len += len;
         strcat(object_buf, buf);
 
-        Rio_writen(clientfd, buf, len);
+        if ((rio_writen(clientfd, buf, len)) < 0)
+        {
+            clienterror(clientfd, "GET", "502", "Bad Gate",
+                "Proxy couldn't send massage to client");
+            return -1;
+        }
 
         memset(buf, 0, sizeof(buf));
     }
@@ -291,7 +310,6 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
 
     Close(serverfd);
 
-    // return response;
     return object_len;
 }
 
