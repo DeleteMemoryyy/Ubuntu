@@ -28,9 +28,19 @@ typedef struct
 typedef struct
 {
     char header[MAXLINE];
-    int length;
-    char* contentp;
-} Response;
+    size_t hash;
+    char* content;
+    int content_size;
+    Object *prev, *succ;
+} Object;
+
+typedef struct
+{
+    Object *head, *tail;
+    int max_size, rest_size;
+} Cache;
+
+Cache cache;
 
 #define DEBUG
 
@@ -67,6 +77,9 @@ int main(int argc, char** argv)
         fprintf(stderr, "Usage: %s <port>\n", argv[0]);
         exit(1);
     }
+
+    init_cache();
+
     listenfd = Open_listenfd(argv[1]);
 
     while (1)
@@ -82,10 +95,188 @@ int main(int argc, char** argv)
     return 0;
 }
 
+size_t get_hash(char* str)
+{
+    size_t c, hash = 0;
+    while ((c = *str))
+    {
+        hash = hash * 131 + c;
+        str++;
+    }
+    return hash;
+}
+
+void init_cahce()
+{
+    cache.head = NULL;
+    cache.tail = NULL;
+    cache.max_size = 0;
+    cache.rest_size = MAX_CACHE_SIZE;
+}
+
+Object* search_object(char* header, size_t hash)
+{
+    Object* cur = cache.tail;
+    while ((cur))
+    {
+        if (hash == cur->hash && !strcmp(header, cur->header))
+        {
+            delete_in_list(cur);
+            push_back_object(cur);
+            break;
+        }
+        cur = cur->prev;
+    }
+
+    return cur;
+}
+
+inline void push_back_object(Object* object)
+{
+    object->succ = NULL;
+    object->prev = cache.tail;
+
+    if (cache.tail)
+        cache.tail->succ = object;
+    else
+        cache.head = object;
+}
+
+int delete_one_object(int requesting_size)
+{
+    Object* object = cache.head;
+
+    while ((object) && object->content_size < requesting_size)
+        object = object->succ;
+
+    if (!object)
+        return -1;
+
+    delete_in_list(object);
+
+    requesting_size = object->content_size;
+
+    Free(object->content);
+    Free(object);
+
+    return requesting_size;
+}
+
+void delete_in_list(Object* object)
+{
+    Object *object_prev = object->prev, *object_succ = object->succ;
+    if ((object_prev))
+    {
+        object_prev->succ = object_succ;
+        if ((object_succ))
+            object_succ->prev = object_prev;
+        else
+            cache->tail = object_prev;
+    }
+    else
+    {
+        cache->head = object_succ;
+        if ((object_succ))
+            object_succ->prev = NULL;
+        else
+            cache->tail = NULL;
+    }
+}
+
+int delete_objects_to_size(int requesting_size)
+{
+    Object *cur_object = cache.head, *object_ed = cache.head, *delete_object;
+    int delete_size = 0;
+
+    while ((object_ed) && delete_size < requesting_size)
+    {
+        delete_size += object_ed->content_size;
+        object_ed = object_ed->succ;
+    }
+
+    if (delte_size < requesting_size)
+        retunr - 1;
+
+    cache.head = object_ed;
+    if ((object_ed))
+        object_ed->prev = NULL;
+    else
+        cache.tail = NULL;
+    while (cur_object != object_ed)
+    {
+        delete_object = cur_object;
+        cur_object = cur_object->succ;
+        Free(delete_object->content);
+        Free(delete_object);
+    }
+
+    return delete_size;
+}
+
+int update_max_size() 
+{
+	int tmp = 0;
+	Object *object = cache.head;
+	while((object))
+	{
+		if(Object->content_size > tmp)
+			tmp = object->content_size;
+		object = object->succ;
+	}
+	cache.max_size = tmp;
+}
+
+int insert_object(char* header, char* object_buf)
+{
+    int requesting_size = strlen(object_buf);
+
+    Object* object = Malloc(sizeof(Object));
+    memcpy(object->header, header);
+    object->hash = get_hash(header);
+    memcpy(object->content, object_buf);
+    object->content_size = strlen(object_buf);
+
+    if (requesting_size > cache.rest_size)
+    {
+        if (requesting_size <= cache.max_size)
+        {
+            cache.rest_size += delete_one_object(requesting_size);
+            update_max_size();
+        }
+        else
+        {
+            cache.rest_size -= delete_objects_to_size(requesting_size);
+            update_max_size();
+        }
+    }
+
+    cache.rest_size -= requesting_size;
+    push_back_object(object);
+    if(requesting_size > cache.max_size)
+    	cache.max_size = requesting_size;
+}
+
+void clear_cache()
+{
+    if (!(cache->head))
+        return;
+
+    Object* cur = cache->head;
+    while (cur)
+    {
+        Free(cur->content);
+        cur = cur->succ;
+    }
+}
+
 void* thread(void* vargp)
 {
     int connfd = *((int*)vargp);
     Pthread_detach(Pthread_self());
+    sigset_t mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGPIPE);
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
     Free(vargp);
     process_request(connfd);
     Close(connfd);
@@ -96,7 +287,6 @@ void process_request(int clientfd)
 {
     rio_t cli_rio;
     Request request;
-    Response* response;
     char object_buf[MAX_OBJECT_SIZE];
     int object_len;
 
@@ -106,11 +296,8 @@ void process_request(int clientfd)
     if (parse_requsethdrs(&cli_rio, clientfd, &request))
         return;
 
-    dbg_printf("\nHost name: %s\n", request.host);
+    dbg_printf("Host name: %s\n", request.host);
     dbg_printf("Request to server:\n%s", request.content);
-
-    response = Malloc(sizeof(Response));
-    memset(response, 0, sizeof(Response));
 
     if ((object_len = connect_with_server(clientfd, &request, object_buf)) > 0)
     {
@@ -130,16 +317,17 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
         return 1;
     }
 
-    dbg_printf("Request from client: %s\n\n\n", ori_request);
+    dbg_printf("Request from client:\n%s", ori_request);
 
     memset(method, 0, sizeof(method));
     memset(uri, 0, sizeof(uri));
+    memset(pathname, 0, sizeof(pathname));
 
     sscanf(ori_request, "%s %s", method, uri);
 
     if (strcasecmp(method, "GET"))
     {
-
+        dbg_printf("Method not implemented\n");
         clienterror(clientfd, method, "501", "Not Implemented",
             "Proxy does not implement this method");
         return 2;
@@ -148,8 +336,8 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
     if (parse_uri(uri, request->host, pathname, request->port))
     {
         dbg_printf("Parse uri error\n");
-        clienterror(
-            clientfd, "GET", "400", "Bad Request", "Proxy couldn't prase the uri");
+        clienterror(clientfd, "GET", "400", "Bad Request",
+            "Proxy couldn't prase the uri");
         return 3;
     }
 
@@ -187,6 +375,9 @@ int parse_uri(char* uri, char* hostname, char* pathname, char* port)
     memcpy(hostname, hostst, hostlen);
 
     memset(port, 0, PORT_SIZE);
+
+    pathname[0] = '/';
+
     if (*hosted == '/')
     {
         strcpy(port, "80");
@@ -208,9 +399,7 @@ int parse_uri(char* uri, char* hostname, char* pathname, char* port)
             pathst++;
     }
     if ((pathst))
-        pathname = strcpy(pathname, pathst);
-    else
-        pathname[0] = '\0';
+        strcat(pathname, pathst);
 
     return 0;
 }
@@ -225,7 +414,6 @@ int read_requesthdrs(rio_t* rp, Request* request)
     {
         if (rio_readlineb(rp, buf, MAXLINE) < 0)
             return 1;
-        dbg_printf("Request header from client:\n%s", buf);
 
         if (!strcmp(buf, "\r\n"))
             break;
@@ -255,12 +443,14 @@ int read_requesthdrs(rio_t* rp, Request* request)
 
     if (!flag_contain_host)
     {
-        strcat(request->content, "Host:");
+        strcat(request->content, "Host: ");
         strcat(request->content, request->host);
         strcat(request->content, "\r\n");
     }
 
     strcat(request->content, "\r\n");
+
+    dbg_printf("Request to server:\n%s", request->content);
 
     return 0;
 }
@@ -271,8 +461,9 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
     rio_t ser_rio;
     char buf[MAXLINE];
 
-    if ((serverfd = Open_clientfd(request->host, request->port)) < 0)
+    if ((serverfd = open_clientfd(request->host, request->port)) < 0)
     {
+
         clienterror(clientfd, "GET", "502", "Bad Gate",
             "Proxy couldn't' connect to server");
         return -1;
@@ -293,7 +484,8 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
     while ((len = rio_readnb(&ser_rio, buf, sizeof(buf))) > 0)
     {
         object_len += len;
-        strcat(object_buf, buf);
+        if (object_len < MAX_OBJECT_SIZE)
+            strcat(object_buf, buf);
 
         if ((rio_writen(clientfd, buf, len)) < 0)
         {
@@ -333,10 +525,16 @@ void clienterror(
 
     /* Print the HTTP response */
     sprintf(buf, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);
-    Rio_writen(fd, buf, strlen(buf));
+    int buf_len = strlen(buf), body_len = strlen(buf);
+    if (rio_writen(fd, buf, buf_len) != buf_len)
+        return;
     sprintf(buf, "Content-type: text/html\r\n");
-    Rio_writen(fd, buf, strlen(buf));
+    buf_len = strlen(buf);
+    if (rio_writen(fd, buf, buf_len) != buf_len)
+        return;
     sprintf(buf, "Content-length: %d\r\n\r\n", (int)strlen(body));
-    Rio_writen(fd, buf, strlen(buf));
-    Rio_writen(fd, body, strlen(body));
+    buf_len = strlen(buf);
+    if (rio_writen(fd, buf, buf_len) != buf_len)
+        return;
+    rio_writen(fd, body, body_len);
 }

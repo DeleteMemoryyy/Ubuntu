@@ -8,14 +8,15 @@
 CC = gcc
 CFLAGS = -g -Wall
 LDFLAGS = -lpthread
+WEFLAGS = -Werror
 
 all: proxy
 
 csapp.o: csapp.c csapp.h
-	$(CC) $(CFLAGS) -c csapp.c
+	$(CC) $(CFLAGS) $(WEFLAGS) -c csapp.c
 
 proxy.o: proxy.c csapp.h
-	$(CC) $(CFLAGS) -c proxy.c
+	$(CC) $(CFLAGS) $(WEFLAGS) -c proxy.c
 
 proxy: proxy.o csapp.o
 	$(CC) $(CFLAGS) proxy.o csapp.o -o proxy $(LDFLAGS)
