@@ -14,17 +14,15 @@
  * 	cache.c & cache.h 	Cache with LRU strategy, realized with hash
  * number and linklist.
  *
- *
- *
  * 	Program are running in multiply-thread, with methods to aviod race in cache. 
  *
- *
+ *  Send "clear cache" to reset cache.
+ *  
  */
 
 #include <stdio.h>
-
-#include "cache.h"
 #include "csapp.h"
+#include "cache.h"
 #include "request.h"
 
 int main(int argc, char** argv)
