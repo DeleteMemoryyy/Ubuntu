@@ -8,9 +8,15 @@
 CC = gcc
 CFLAGS = -g -Wall
 LDFLAGS = -lpthread
-# WEFLAGS = -Werror
+WEFLAGS = -Werror
 
 all: proxy
+
+cache.o: cache.c cache.h
+	$(CC) $(CFLAGS) $(WEFLAGS) -c cache.c
+
+request.o: request.c request.h
+	$(CC) $(CFLAGS) $(WEFLAGS) -c request.c
 
 csapp.o: csapp.c csapp.h
 	$(CC) $(CFLAGS) $(WEFLAGS) -c csapp.c
@@ -18,10 +24,12 @@ csapp.o: csapp.c csapp.h
 proxy.o: proxy.c csapp.h
 	$(CC) $(CFLAGS) $(WEFLAGS) -c proxy.c
 
-proxy: proxy.o csapp.o
-	$(CC) $(CFLAGS) proxy.o csapp.o -o proxy $(LDFLAGS)
+proxy: proxy.o csapp.o request.o cache.o
+	$(CC) $(CFLAGS) proxy.o csapp.o request.o cache.o -o proxy $(LDFLAGS)
+
 # Creates a tarball in ../proxylab-handin.tar that you should then
 # hand in to Autolab. DO NOT MODIFY THIS!
+
 handin:
 	(make clean; cd ..; tar cvf proxylab-handin.tar proxylab-handout --exclude tiny --exclude nop-server.py --exclude proxy --exclude driver.sh --exclude port-for-user.pl --exclude free-port.sh --exclude ".*")
 
