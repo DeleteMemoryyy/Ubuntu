@@ -8,7 +8,7 @@
 CC = gcc
 CFLAGS = -g -Wall
 LDFLAGS = -lpthread
-WEFLAGS = -Werror
+# WEFLAGS = -Werror
 
 all: proxy
 
