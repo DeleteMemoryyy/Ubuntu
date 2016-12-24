@@ -17,6 +17,9 @@ static const char* proxy_connection_hdr = "Proxy-Connection: close\r\n";
 #define DEFAULT_HOST 80
 #define PORT_SIZE 32
 
+#define ONLY_GET
+#define CACHE_WITH_HEADER
+
 #define DEBUG
 #ifdef DEBUG
 #define dbg_printf(...) printf(__VA_ARGS__)
@@ -27,6 +30,7 @@ static const char* proxy_connection_hdr = "Proxy-Connection: close\r\n";
 typedef struct
 {
     char host[MAXLINE];
+    char header[MAXLINE];
     char content[MAXLINE];
     char port[16];
 } Request;
@@ -318,8 +322,14 @@ void process_request(int clientfd)
     dbg_printf("Host name: %s\n", request.host);
     dbg_printf("Request to server:\n%s", request.content);
 
+#ifdef CACHE_WITH_HEADER
+    size_t hash = get_hash(request.header);
+    Object* obj_cache = search_object(request.header, hash);
+#else
     size_t hash = get_hash(request.content);
     Object* obj_cache = search_object(request.content, hash);
+#endif
+
     if ((obj_cache))
     {
         dbg_printf("	Found response in cache, update the position\n");
@@ -344,7 +354,11 @@ void process_request(int clientfd)
         {
             dbg_printf("	Save response in cache\n");
             P(&mutex);
+#ifdef CACHE_WITH_HEADER
+            insert_object(request.header, hash, object_buf, object_len);
+#else
             insert_object(request.content, hash, object_buf, object_len);
+#endif
             V(&mutex);
         }
     }
@@ -364,7 +378,7 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
 
     dbg_printf("Request header from client:\n%s", ori_request);
 
-    if (!strncmp(ori_request, "Clear cache", 11))
+    if (!strncmp(ori_request, "clear cache", 11))
     {
         P(&mutex);
         clear_cache();
@@ -378,6 +392,7 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
 
     sscanf(ori_request, "%s %s", method, uri);
 
+#ifdef ONLY_GET
     if (strcasecmp(method, "GET"))
     {
         dbg_printf("Method not implemented\n");
@@ -385,6 +400,7 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
             "Proxy does not implement this method");
         return 2;
     }
+#endif
 
     if (parse_uri(uri, request->host, pathname, request->port))
     {
@@ -396,6 +412,12 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
 
     memset(request->content, 0, sizeof(request->content));
     sprintf(request->content, "%s %s %s\r\n", method, pathname, "HTTP/1.0");
+
+#ifdef CACHE_WITH_HEADER
+    memset(request->header, 0, sizeof(request->header));
+    sprintf(request->header, "%s %s %s %s", method, request->host,
+        request->port, pathname);
+#endif
 
     if (read_requesthdrs(rp, request))
     {
