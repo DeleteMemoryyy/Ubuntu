@@ -24,8 +24,8 @@ csapp.o: csapp.c csapp.h
 proxy.o: proxy.c csapp.h
 	$(CC) $(CFLAGS) $(WEFLAGS) -c proxy.c
 
-proxy: proxy.o csapp.o request.o cache.o
-	$(CC) $(CFLAGS) proxy.o csapp.o request.o cache.o -o proxy $(LDFLAGS)
+proxy: proxy.o request.o cache.o csapp.o 
+	$(CC) $(CFLAGS) proxy.o request.o cache.o csapp.o -o proxy $(LDFLAGS)
 
 # Creates a tarball in ../proxylab-handin.tar that you should then
 # hand in to Autolab. DO NOT MODIFY THIS!
