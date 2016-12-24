@@ -3,7 +3,7 @@
 
 #define _GNU_SOURCE
 
-/* Recommended max cache and object sizes */
+/* Recommended max cache and obj sizes */
 #define MAX_CACHE_SIZE 1049000
 #define MAX_OBJECT_SIZE 102400
 
@@ -15,8 +15,14 @@ static const char* connection_hdr = "Connection: close\r\n";
 static const char* proxy_connection_hdr = "Proxy-Connection: close\r\n";
 
 #define DEFAULT_HOST 80
-
 #define PORT_SIZE 32
+
+#define DEBUG
+#ifdef DEBUG
+#define dbg_printf(...) printf(__VA_ARGS__)
+#else
+#define dbg_printf(...)
+#endif
 
 typedef struct
 {
@@ -25,13 +31,13 @@ typedef struct
     char port[16];
 } Request;
 
-typedef struct
+typedef struct Object_t
 {
     char header[MAXLINE];
     size_t hash;
     char* content;
     int content_size;
-    Object *prev, *succ;
+    struct Object_t *prev, *succ;
 } Object;
 
 typedef struct
@@ -40,15 +46,9 @@ typedef struct
     int max_size, rest_size;
 } Cache;
 
+/* Global variables */
+sem_t mutex;
 Cache cache;
-
-#define DEBUG
-
-#ifdef DEBUG
-#define dbg_printf(...) printf(__VA_ARGS__)
-#else
-#define dbg_printf(...)
-#endif
 
 void* thread(void* vargp);
 void process_request(int connfd);
@@ -58,6 +58,18 @@ int read_requesthdrs(rio_t* rp, Request* request);
 int connect_with_server(int clientfd, Request* request, char* object_buf);
 void clienterror(
     int fd, char* cause, char* errnum, char* shortmsg, char* longmsg);
+
+size_t get_hash(char* str);
+void init_proxy();
+Object* search_object(char* header, size_t hash);
+void update_object_position(Object* obj);
+void push_back_object(Object* obj);
+int delete_one_object(int req_size);
+void delete_in_list(Object* obj);
+int delete_objects_to_size(int req_size);
+void update_max_size();
+void insert_object(char* header, size_t hash, char* object_buf, int req_size);
+void clear_cache();
 
 int main(int argc, char** argv)
 {
@@ -78,7 +90,7 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    init_cache();
+    init_proxy();
 
     listenfd = Open_listenfd(argv[1]);
 
@@ -91,6 +103,8 @@ int main(int argc, char** argv)
     }
 
     Close(listenfd);
+
+    clear_cache();
 
     return 0;
 }
@@ -106,8 +120,9 @@ size_t get_hash(char* str)
     return hash;
 }
 
-void init_cahce()
+void init_proxy()
 {
+    sem_init(&mutex, 0, 1);
     cache.head = NULL;
     cache.tail = NULL;
     cache.max_size = 0;
@@ -116,157 +131,163 @@ void init_cahce()
 
 Object* search_object(char* header, size_t hash)
 {
-    Object* cur = cache.tail;
-    while ((cur))
+    Object* cur_obj = cache.tail;
+    while ((cur_obj))
     {
-        if (hash == cur->hash && !strcmp(header, cur->header))
-        {
-            delete_in_list(cur);
-            push_back_object(cur);
+        if (hash == cur_obj->hash && !strcmp(header, cur_obj->header))
             break;
-        }
-        cur = cur->prev;
+        cur_obj = cur_obj->prev;
     }
 
-    return cur;
+    return cur_obj;
 }
 
-inline void push_back_object(Object* object)
+inline void update_object_position(Object* obj)
 {
-    object->succ = NULL;
-    object->prev = cache.tail;
+    delete_in_list(obj);
+    push_back_object(obj);
+}
+
+inline void push_back_object(Object* obj)
+{
+    obj->succ = NULL;
+    obj->prev = cache.tail;
 
     if (cache.tail)
-        cache.tail->succ = object;
+        cache.tail->succ = obj;
     else
-        cache.head = object;
+        cache.head = obj;
+
+    cache.tail = obj;
 }
 
-int delete_one_object(int requesting_size)
+int delete_one_object(int req_size)
 {
-    Object* object = cache.head;
+    Object* obj = cache.head;
 
-    while ((object) && object->content_size < requesting_size)
-        object = object->succ;
+    while ((obj) && obj->content_size < req_size)
+        obj = obj->succ;
 
-    if (!object)
+    if (!obj)
         return -1;
 
-    delete_in_list(object);
+    delete_in_list(obj);
 
-    requesting_size = object->content_size;
+    req_size = obj->content_size;
 
-    Free(object->content);
-    Free(object);
+    free(obj->content);
+    free(obj);
 
-    return requesting_size;
+    return req_size;
 }
 
-void delete_in_list(Object* object)
+void delete_in_list(Object* obj)
 {
-    Object *object_prev = object->prev, *object_succ = object->succ;
-    if ((object_prev))
+    Object *obj_prev = obj->prev, *obj_succ = obj->succ;
+    if ((obj_prev))
     {
-        object_prev->succ = object_succ;
-        if ((object_succ))
-            object_succ->prev = object_prev;
+        obj_prev->succ = obj_succ;
+        if ((obj_succ))
+            obj_succ->prev = obj_prev;
         else
-            cache->tail = object_prev;
+            cache.tail = obj_prev;
     }
     else
     {
-        cache->head = object_succ;
-        if ((object_succ))
-            object_succ->prev = NULL;
+        cache.head = obj_succ;
+        if ((obj_succ))
+            obj_succ->prev = NULL;
         else
-            cache->tail = NULL;
+            cache.tail = NULL;
     }
 }
 
-int delete_objects_to_size(int requesting_size)
+int delete_objects_to_size(int req_size)
 {
-    Object *cur_object = cache.head, *object_ed = cache.head, *delete_object;
+    Object *cur_obj = cache.head, *obj_ed = cache.head, *delete_obj;
     int delete_size = 0;
 
-    while ((object_ed) && delete_size < requesting_size)
+    while ((obj_ed) && delete_size < req_size)
     {
-        delete_size += object_ed->content_size;
-        object_ed = object_ed->succ;
+        delete_size += obj_ed->content_size;
+        obj_ed = obj_ed->succ;
     }
 
-    if (delte_size < requesting_size)
-        retunr - 1;
+    if (delete_size < req_size)
+        return -1;
 
-    cache.head = object_ed;
-    if ((object_ed))
-        object_ed->prev = NULL;
+    cache.head = obj_ed;
+    if ((obj_ed))
+        obj_ed->prev = NULL;
     else
         cache.tail = NULL;
-    while (cur_object != object_ed)
+    while (cur_obj != obj_ed)
     {
-        delete_object = cur_object;
-        cur_object = cur_object->succ;
-        Free(delete_object->content);
-        Free(delete_object);
+        delete_obj = cur_obj;
+        cur_obj = cur_obj->succ;
+        free(delete_obj->content);
+        free(delete_obj);
     }
 
     return delete_size;
 }
 
-int update_max_size() 
+void update_max_size()
 {
-	int tmp = 0;
-	Object *object = cache.head;
-	while((object))
-	{
-		if(Object->content_size > tmp)
-			tmp = object->content_size;
-		object = object->succ;
-	}
-	cache.max_size = tmp;
+    int tmp = 0;
+    Object* obj = cache.head;
+    while ((obj))
+    {
+        if (obj->content_size > tmp)
+            tmp = obj->content_size;
+        obj = obj->succ;
+    }
+    cache.max_size = tmp;
 }
 
-int insert_object(char* header, char* object_buf)
+void insert_object(char* header, size_t hash, char* object_buf, int req_size)
 {
-    int requesting_size = strlen(object_buf);
+    Object* obj = Malloc(sizeof(Object));
+    strcpy(obj->header, header);
+    obj->hash = hash;
+    obj->content = Malloc(req_size + 1);
+    memset(obj->content, 0, req_size + 1);
+    memcpy(obj->content, object_buf, req_size);
+    obj->content_size = req_size;
 
-    Object* object = Malloc(sizeof(Object));
-    memcpy(object->header, header);
-    object->hash = get_hash(header);
-    memcpy(object->content, object_buf);
-    object->content_size = strlen(object_buf);
-
-    if (requesting_size > cache.rest_size)
+    if (req_size > cache.rest_size)
     {
-        if (requesting_size <= cache.max_size)
-        {
-            cache.rest_size += delete_one_object(requesting_size);
-            update_max_size();
-        }
+        if (req_size <= cache.max_size)
+            cache.rest_size += delete_one_object(req_size);
         else
-        {
-            cache.rest_size -= delete_objects_to_size(requesting_size);
-            update_max_size();
-        }
+            cache.rest_size += delete_objects_to_size(req_size);
+        update_max_size();
     }
 
-    cache.rest_size -= requesting_size;
-    push_back_object(object);
-    if(requesting_size > cache.max_size)
-    	cache.max_size = requesting_size;
+    cache.rest_size -= req_size;
+    push_back_object(obj);
+    if (req_size > cache.max_size)
+        cache.max_size = req_size;
 }
 
 void clear_cache()
 {
-    if (!(cache->head))
+    if (!(cache.head))
         return;
 
-    Object* cur = cache->head;
-    while (cur)
+    Object *cur_obj = cache.head, *delete_obj;
+    while (cur_obj)
     {
-        Free(cur->content);
-        cur = cur->succ;
+        delete_obj = cur_obj;
+        cur_obj = cur_obj->succ;
+        free(delete_obj->content);
+        free(delete_obj);
     }
+
+    cache.head = NULL;
+    cache.tail = NULL;
+    cache.max_size = 0;
+    cache.rest_size = MAX_CACHE_SIZE;
 }
 
 void* thread(void* vargp)
@@ -277,7 +298,7 @@ void* thread(void* vargp)
     sigemptyset(&mask);
     sigaddset(&mask, SIGPIPE);
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
-    Free(vargp);
+    free(vargp);
     process_request(connfd);
     Close(connfd);
     return NULL;
@@ -287,8 +308,6 @@ void process_request(int clientfd)
 {
     rio_t cli_rio;
     Request request;
-    char object_buf[MAX_OBJECT_SIZE];
-    int object_len;
 
     Rio_readinitb(&cli_rio, clientfd);
 
@@ -299,9 +318,35 @@ void process_request(int clientfd)
     dbg_printf("Host name: %s\n", request.host);
     dbg_printf("Request to server:\n%s", request.content);
 
-    if ((object_len = connect_with_server(clientfd, &request, object_buf)) > 0)
+    size_t hash = get_hash(request.content);
+    Object* obj_cache = search_object(request.content, hash);
+    if ((obj_cache))
     {
-        dbg_printf("Save cache\n");
+        dbg_printf("	Found response in cache, update the position\n");
+        P(&mutex);
+        update_object_position(obj_cache);
+        V(&mutex);
+        if ((rio_writen(clientfd, obj_cache->content, obj_cache->content_size))
+            < 0)
+        {
+            clienterror(clientfd, "GET", "502", "Bad Gate",
+                "Proxy couldn't respond content in cache\n");
+            return;
+        }
+    }
+    else
+    {
+        char object_buf[MAX_OBJECT_SIZE + 1];
+        int object_len;
+
+        if ((object_len = connect_with_server(clientfd, &request, object_buf))
+            > 0)
+        {
+            dbg_printf("	Save response in cache\n");
+            P(&mutex);
+            insert_object(request.content, hash, object_buf, object_len);
+            V(&mutex);
+        }
     }
 }
 
@@ -317,7 +362,15 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
         return 1;
     }
 
-    dbg_printf("Request from client:\n%s", ori_request);
+    dbg_printf("Request header from client:\n%s", ori_request);
+
+    if (!strncmp(ori_request, "Clear cache", 11))
+    {
+        P(&mutex);
+        clear_cache();
+        V(&mutex);
+        return -1;
+    }
 
     memset(method, 0, sizeof(method));
     memset(uri, 0, sizeof(uri));
@@ -342,7 +395,6 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
     }
 
     memset(request->content, 0, sizeof(request->content));
-
     sprintf(request->content, "%s %s %s\r\n", method, pathname, "HTTP/1.0");
 
     if (read_requesthdrs(rp, request))
@@ -471,7 +523,7 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
 
     Rio_readinitb(&ser_rio, serverfd);
 
-    memset(object_buf, 0, MAX_OBJECT_SIZE);
+    memset(object_buf, 0, MAX_OBJECT_SIZE + 1);
 
     if ((rio_writen(serverfd, request->content, sizeof(request->content))) < 0)
     {
@@ -485,8 +537,10 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
     {
         object_len += len;
         if (object_len < MAX_OBJECT_SIZE)
-            strcat(object_buf, buf);
-
+        {
+            memcpy(object_buf, buf, len);
+            object_buf += len;
+        }
         if ((rio_writen(clientfd, buf, len)) < 0)
         {
             clienterror(clientfd, "GET", "502", "Bad Gate",
