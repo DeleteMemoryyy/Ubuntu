@@ -230,7 +230,7 @@ int parse_uri(char* uri, Request* request, char* pathname)
     if ((pathst = strchr(hosted, '/')))
         strcpy(pathname, pathst);
     else
-        pathname[0] = '\0';
+        strcpy(pathname,"/");
 
     return 0;
 }
@@ -288,7 +288,7 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
 
         clienterror(clientfd, "GET", "502", "Bad Gate",
             "Proxy couldn't' connect to server");
-        Close(serverfd);
+        close(serverfd);
         return -1;
     }
 
@@ -298,7 +298,7 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
     {
         clienterror(clientfd, "GET", "502", "Bad Gate",
             "Proxy couldn't send massage to server");
-        Close(serverfd);
+        close(serverfd);
         return -1;
     }
 
@@ -315,7 +315,7 @@ int connect_with_server(int clientfd, Request* request, char* object_buf)
         {
             clienterror(clientfd, "GET", "502", "Bad Gate",
                 "Proxy couldn't send massage to client");
-            Close(serverfd);
+            close(serverfd);
             return -1;
         }
 
@@ -339,14 +339,14 @@ void clienterror(
     char buf[MAXLINE], body[MAXBUF];
 
     /* Build the HTTP response body */
-    sprintf(body, "<html><title>Tiny Error</title>");
+    sprintf(body, "<html><title>Proxy Error</title>");
     sprintf(body, "%s<body bgcolor="
                   "ffffff"
                   ">\r\n",
         body);
     sprintf(body, "%s%s: %s\r\n", body, errnum, shortmsg);
     sprintf(body, "%s<p>%s: %s\r\n", body, longmsg, cause);
-    sprintf(body, "%s<hr><em>The Tiny Web server</em>\r\n", body);
+    sprintf(body, "%s<hr><em>The proxy server</em>\r\n", body);
 
     /* Print the HTTP response */
     sprintf(buf, "HTTP/1.0 %s %s\r\n", errnum, shortmsg);

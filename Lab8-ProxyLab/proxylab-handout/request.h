@@ -9,7 +9,7 @@
 #define PORT_SIZE 16
 
 /* Decide to check method or not */
-// #define ONLY_GET
+#define ONLY_GET
 /* Decide to compare object with header line or whole request */
 #define CACHE_WITH_HEADER
 

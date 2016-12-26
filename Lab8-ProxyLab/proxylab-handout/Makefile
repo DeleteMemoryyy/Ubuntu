@@ -8,7 +8,7 @@
 CC = gcc
 CFLAGS = -g -Wall
 LDFLAGS = -lpthread
-# WEFLAGS = -Werror
+WEFLAGS = -Werror
 
 all: proxy
 
@@ -26,6 +26,7 @@ proxy.o: proxy.c csapp.h
 
 proxy: proxy.o request.o cache.o csapp.o 
 	$(CC) $(CFLAGS) proxy.o request.o cache.o csapp.o -o proxy $(LDFLAGS)
+	rm -f *.o
 
 # Creates a tarball in ../proxylab-handin.tar that you should then
 # hand in to Autolab. DO NOT MODIFY THIS!
