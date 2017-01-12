@@ -1,11 +1,12 @@
 #include <stdio.h>
 
+#include "cache.h"
 #include "csapp.h"
 #include "request.h"
-#include "cache.h"
 
 /* Global variables */
-sem_t mutex;
+int readcnt;
+sem_t mutex, w;
 Cache cache;
 
 /* BSD hash for string */
@@ -31,19 +32,32 @@ Object* search_object(char* header, size_t hash)
         cur_obj = cur_obj->prev;
     }
 
+    if ((cur_obj))
+        cur_obj->dirty = 1;
+
     return cur_obj;
 }
 
-/* Move the object to tail of cache list */
-inline void update_object_position(Object* obj)
+/* Move modified objects to the tail of cache list */
+void update_object_position()
 {
-    delete_in_list(obj);
-    push_back_object(obj);
+    Object* obj = cache.head;
+
+    while ((obj))
+    {
+        if (obj->dirty)
+        {
+            delete_in_list(obj);
+            push_back_object(obj);
+        }
+        obj = obj->succ;
+    }
 }
 
 /* Put the object at the tail of cache list */
 inline void push_back_object(Object* obj)
 {
+    obj->dirty = 0;
     obj->succ = NULL;
     obj->prev = cache.tail;
 
@@ -60,7 +74,7 @@ int delete_one_object(int req_size)
 {
     Object* obj = cache.head;
 
-    while ((obj) && obj->content_size < req_size)
+    while (obj && obj->content_size < req_size)
         obj = obj->succ;
 
     if (!obj)
@@ -133,7 +147,7 @@ void update_max_size()
 {
     int tmp = 0;
     Object* obj = cache.head;
-    while ((obj))
+    while (obj)
     {
         if (obj->content_size > tmp)
             tmp = obj->content_size;

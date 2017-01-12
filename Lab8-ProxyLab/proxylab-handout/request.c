@@ -13,7 +13,9 @@ static const char* proxy_connection_hdr = "Proxy-Connection: close\r\n";
 
 void init_proxy()
 {
+    readcnt = 0;
     sem_init(&mutex, 0, 1);
+    sem_init(&w, 0, 1);
     cache.head = NULL;
     cache.tail = NULL;
     cache.max_size = 0;
@@ -41,13 +43,12 @@ void clear_cache()
     cache.rest_size = MAX_CACHE_SIZE;
 }
 
-/*  */
 void* thread(void* vargp)
 {
     int connfd = *((int*)vargp);
     Pthread_detach(Pthread_self());
 
-    // /* Block SIGPIPE by pthread_sigmask after every thread been created */
+    /* Block SIGPIPE by pthread_sigmask after every thread been created */
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGPIPE);
@@ -77,9 +78,21 @@ void process_request(int clientfd)
 /* First search in cache */
 #ifdef CACHE_WITH_HEADER
     size_t hash = get_hash(request.header);
+
+    P(&mutex);
+    readcnt++;
+    if (readcnt == 1)
+        P(&w);
+    V(&mutex);
     Object* obj_cache = search_object(request.header, hash);
 #else
     size_t hash = get_hash(request.content);
+
+    P(&mutex);
+    readcnt++;
+    if (readcnt == 1)
+        P(&w);
+    V(&mutex);
     Object* obj_cache = search_object(request.content, hash);
 #endif
 
@@ -87,9 +100,6 @@ void process_request(int clientfd)
     if ((obj_cache))
     {
         dbg_printf("    Found response in cache, update the position\n");
-        P(&mutex);
-        update_object_position(obj_cache);
-        V(&mutex);
         if ((rio_writen(clientfd, obj_cache->content, obj_cache->content_size))
             < 0)
         {
@@ -97,6 +107,12 @@ void process_request(int clientfd)
                 "Proxy couldn't respond content in cache\n");
             return;
         }
+
+        P(&mutex);
+        readcnt--;
+        if (!readcnt)
+            V(&w);
+        V(&mutex);
     }
     /* Missed, connect with server and cache received object */
     else
@@ -105,17 +121,25 @@ void process_request(int clientfd)
         memset(object_buf, 0, sizeof(object_buf));
         int object_len;
 
+        P(&mutex);
+        readcnt--;
+        if (!readcnt)
+            V(&w);
+        V(&mutex);
+
         if ((object_len = connect_with_server(clientfd, &request, object_buf))
             > 0)
         {
             dbg_printf("    Save response in cache\n");
-            P(&mutex);
+
+            P(&w);
+            update_object_position();
 #ifdef CACHE_WITH_HEADER
             insert_object(request.header, hash, object_buf, object_len);
 #else
             insert_object(request.content, hash, object_buf, object_len);
 #endif
-            V(&mutex);
+            V(&w);
         }
     }
 }
@@ -139,9 +163,9 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
     /* Command to clear cache */
     if (!strncasecmp(ori_request, "clear cache", 11))
     {
-        P(&mutex);
+        P(&w);
         clear_cache();
-        V(&mutex);
+        V(&w);
         return -1;
     }
 
@@ -193,17 +217,16 @@ int parse_requsethdrs(rio_t* rp, int clientfd, Request* request)
 
 int parse_uri(char* uri, Request* request, char* pathname)
 {
-    if (strncasecmp(uri, "http://", 7))
+    char *hostst, *hosted, *pathst;
+    int hostlen;
+
+    if (!(hostst = strstr(uri, "//")))
     {
-        request->host[0] = '\0';
         dbg_printf("Parse uri error: illegal host\n");
         return 1;
     }
 
-    char *hostst, *hosted, *pathst;
-    int hostlen;
-
-    hostst = uri + 7;
+    hostst += 2;
     hosted = strpbrk(hostst, "/:\r\n\0");
     hostlen = (size_t)hosted - (size_t)hostst;
 
@@ -230,7 +253,7 @@ int parse_uri(char* uri, Request* request, char* pathname)
     if ((pathst = strchr(hosted, '/')))
         strcpy(pathname, pathst);
     else
-        strcpy(pathname,"/");
+        strcpy(pathname, "/");
 
     return 0;
 }
@@ -239,7 +262,8 @@ int read_requesthdrs(rio_t* rp, Request* request)
 {
     char buf[MAXLINE];
 
-    int flag_contain_host = 0;
+    int flag_contain_host = 0, flag_user_agent = 0, flag_connection = 0,
+        flag_proxy_connection = 0;
 
     while (1)
     {
@@ -249,14 +273,23 @@ int read_requesthdrs(rio_t* rp, Request* request)
         if (!strcmp(buf, "\r\n"))
             break;
 
-        dbg_printf("%s",buf);
+        dbg_printf("%s", buf);
 
         if (!strncasecmp(buf, "User-Agent:", 11))
+        {
             strcat(request->content, user_agent_hdr);
+            flag_user_agent = 1;
+        }
         else if (!strncasecmp(buf, "Connection:", 11))
+        {
             strcat(request->content, connection_hdr);
+            flag_connection = 1;
+        }
         else if (!strncasecmp(buf, "Proxy-Connection:", 17))
+        {
             strcat(request->content, proxy_connection_hdr);
+            flag_proxy_connection = 1;
+        }
         else
         {
             if (!strncasecmp(buf, "Host:", 5))
@@ -264,13 +297,19 @@ int read_requesthdrs(rio_t* rp, Request* request)
             strcat(request->content, buf);
         }
     }
-
     if (!flag_contain_host)
     {
         strcat(request->content, "Host: ");
         strcat(request->content, request->host);
         strcat(request->content, "\r\n");
     }
+
+    if (!flag_user_agent)
+        strcat(request->content, user_agent_hdr);
+    if (!flag_connection)
+        strcat(request->content, connection_hdr);
+    if (!flag_proxy_connection)
+        strcat(request->content, proxy_connection_hdr);
 
     strcat(request->content, "\r\n");
 
