@@ -1,3 +1,6 @@
+#	Coursera换行显示有问题，请移步github查看具体代码，谢谢~
+#	https://github.com/DeleteMemoryyy/Ubuntu/blob/DeleteMemory/MIPS/mips2.asm
+
 	.data
 buf:	.space 1000
 success_string:	.asciiz	"Success! Location:"
