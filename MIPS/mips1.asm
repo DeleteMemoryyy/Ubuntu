@@ -19,7 +19,7 @@ number_offset: .word	# Strings in MIPS are end with two characters '\0'
 	0,5,11,18,24,31,37,43,51,58	
 	
 others_string: .asciiz
-	"?"
+	"*"
 
 		
 	.text
