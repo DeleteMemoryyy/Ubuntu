@@ -1,5 +1,5 @@
 #	Coursera换行显示有问题，请移步github查看具体代码，谢谢~
-#	
+#	https://github.com/DeleteMemoryyy/Ubuntu/blob/DeleteMemory/MIPS/mips1.asm
 
 	.data 
 uppercase_word_string: .asciiz
