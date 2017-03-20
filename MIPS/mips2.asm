@@ -36,6 +36,7 @@ query:
 	li	$s1,1
 	
 L1:
+	# start looping
 	lb	$t1,($t0)
 	beqz	$t1,fail
 	

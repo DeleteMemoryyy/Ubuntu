@@ -13,7 +13,7 @@ word_offset: .word	# Strings in MIPS are end with two characters '\0'
 	0,6,12,18,24,29,37,42,48,54,61,66,71,76,85,91,97,104,113,121,127,135,142,149,155,162
 
 number_string: .asciiz
-	"Zero","First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth"
+	"zero","First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth"
 
 number_offset: .word	# Strings in MIPS are end with two characters '\0'
 	0,5,11,18,24,31,37,43,51,58	
