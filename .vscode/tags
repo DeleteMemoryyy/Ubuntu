@@ -1,0 +1,586 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+.ycm_extra_conf.py	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	1;"	kind:file	line:1
+.ycm_extra_conf.py	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	1;"	kind:file	line:1
+BOB.py	../TRECVID/speaker-recognition-master/src/feature/BOB.py	1;"	kind:file	line:1
+BurningWidget	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^class BurningWidget(QtGui.QWidget):$/;"	kind:class	line:489
+CHECK_ACTIVE_INTERVAL	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^CHECK_ACTIVE_INTERVAL = 1       # seconds$/;"	kind:variable	line:26
+CONV_DURATION	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    CONV_DURATION = 1.5$/;"	kind:variable	line:47
+CONV_FILTER_DURATION	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    CONV_FILTER_DURATION = CONV_DURATION$/;"	kind:variable	line:48
+CONV_INTERVAL	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    CONV_INTERVAL = 0.4$/;"	kind:variable	line:46
+DataSet	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^class DataSet(object):$/;"	kind:class	line:67
+DirectoryOfThisScript	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	kind:function	line:74
+DirectoryOfThisScript	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	kind:function	line:77
+FORMAT	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^FORMAT=pyaudio.paInt16$/;"	kind:variable	line:25
+FS	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    FS = 8000$/;"	kind:variable	line:49
+FlagsForFile	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^def FlagsForFile( filename ):$/;"	kind:function	line:107
+FlagsForFile	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^def FlagsForFile( filename ):$/;"	kind:function	line:110
+GMM	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^class GMM(object):$/;"	kind:class	line:44
+GMM	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^class GMM(object):$/;"	kind:class	line:37
+GMMParameter	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^class GMMParameter(Structure):$/;"	kind:class	line:18
+GMMSet	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^class GMMSet(object):$/;"	kind:class	line:11
+GMMSet	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^class GMMSet(object):$/;"	kind:class	line:27
+GMMSet	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^class GMMSet(object):$/;"	kind:class	line:79
+GMMSet	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^class GMMSet(object):$/;"	kind:class	line:76
+GMMSet	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^class GMMSet(object):$/;"	kind:class	line:73
+GMMSet	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^class GMMSet(object):$/;"	kind:class	line:74
+GMMSet	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^class GMMSet(object):$/;"	kind:class	line:16
+GMMSetPyGMM	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^class GMMSetPyGMM(GMMSet):$/;"	kind:class	line:94
+GassianTypeNotImplemented	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^class GassianTypeNotImplemented(Exception):$/;"	kind:class	line:15
+Gaussian	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^class Gaussian(object):$/;"	kind:class	line:30
+GraphWindow	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^class GraphWindow(QWidget):$/;"	kind:class	line:475
+LPC.py	../TRECVID/speaker-recognition-master/src/feature/LPC.py	1;"	kind:file	line:1
+LPCExtractor	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^class LPCExtractor(object):$/;"	kind:class	line:15
+LTSD_VAD	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^class LTSD_VAD(object):$/;"	kind:class	line:19
+LTSV	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^class LTSV(object):$/;"	kind:class	line:17
+LevinsonDurbin	../TRECVID/speaker-recognition-master/src/lpcc/lpc_jp.py	/^def LevinsonDurbin(r, lpcOrder):$/;"	kind:function	line:27
+MAGIC_NUMBER	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^MAGIC_NUMBER = 0.04644$/;"	kind:variable	line:17
+MFCC.py	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	1;"	kind:file	line:1
+MFCCExtractor	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^class MFCCExtractor(object):$/;"	kind:class	line:18
+Main	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^class Main(QMainWindow):$/;"	kind:class	line:45
+MakeRelativePathsInFlagsAbsolute	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	kind:function	line:78
+MakeRelativePathsInFlagsAbsolute	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	kind:function	line:81
+ModelInterface	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^class ModelInterface(object):$/;"	kind:class	line:28
+MonoMaxQueue	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^class MonoMaxQueue(MonoQueue):$/;"	kind:class	line:122
+MonoMinQueue	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^class MonoMinQueue(MonoQueue):$/;"	kind:class	line:126
+MonoQueue	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^class MonoQueue(object):$/;"	kind:class	line:95
+MultiProcessWorker	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^class MultiProcessWorker(object):$/;"	kind:class	line:4
+NAMELIST	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^NAMELIST = ['Nobody']$/;"	kind:variable	line:27
+NOISE_MODEL	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^NOISE_MODEL = "\/tmp\/noise.prof"$/;"	kind:variable	line:16
+NOISE_WAV	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^NOISE_WAV = "\/tmp\/noise.wav"$/;"	kind:variable	line:15
+NPDtype	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^NPDtype = 'int16'$/;"	kind:variable	line:26
+NoiseReduction	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^class NoiseReduction(object):$/;"	kind:class	line:19
+POWER_SPECTRUM_FLOOR	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^POWER_SPECTRUM_FLOOR = 1e-100$/;"	kind:variable	line:7
+POWER_SPECTRUM_FLOOR	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^POWER_SPECTRUM_FLOOR = 1e-100$/;"	kind:variable	line:15
+Person	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^class Person(object):$/;"	kind:class	line:20
+Person	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^class Person(object):$/;"	kind:class	line:30
+Person	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^class Person(object):$/;"	kind:class	line:27
+Person	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^class Person(object):$/;"	kind:class	line:24
+Person	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^class Person(object):$/;"	kind:class	line:25
+Person	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^class Person(object):$/;"	kind:class	line:18
+RecorderThread	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^class RecorderThread(QThread):$/;"	kind:class	line:29
+Sample	../TRECVID/speaker-recognition-master/src/test/sample.py	/^class Sample(object):$/;"	kind:class	line:11
+TEST_DURATION	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    TEST_DURATION = 3$/;"	kind:variable	line:50
+THRES	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^THRES = 0.21$/;"	kind:variable	line:17
+UBM	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^class UBM(object):$/;"	kind:class	line:11
+UBM.py	../TRECVID/speaker-recognition-master/src/test/UBM.py	1;"	kind:file	line:1
+UBM_MODEL_FILE	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    UBM_MODEL_FILE = 'model\/ubm.mixture-32.utt-300.model'$/;"	kind:variable	line:30
+VAD	../TRECVID/speaker-recognition-master/src/filters/VAD.py	/^class VAD(object):$/;"	kind:class	line:13
+VAD	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^class VAD(object):$/;"	kind:class	line:130
+VAD.py	../TRECVID/speaker-recognition-master/src/filters/VAD.py	1;"	kind:file	line:1
+VAD.py	../TRECVID/speaker-recognition-master/src/test/VAD.py	1;"	kind:file	line:1
+X	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	/^X = read_data('..\/test.data')$/;"	kind:variable	line:44
+X	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^X = X[:1000]$/;"	kind:variable	line:77
+X	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^X = mix_feature((fs, signal))$/;"	kind:variable	line:72
+__del__	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    def __del__(self):$/;"	kind:member	line:18
+__getitem__	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def __getitem__(self, ind):$/;"	kind:member	line:119
+__init__	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    def __init__(self, fs, win_length_ms, win_shift_ms, n_lpc,$/;"	kind:member	line:16
+__init__	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^    def __init__(self, fs, win_length_ms, win_shift_ms, FFT_SIZE, n_bands, n_coefs,$/;"	kind:member	line:20
+__init__	../TRECVID/speaker-recognition-master/src/filters/VAD.py	/^    def __init__(self):$/;"	kind:member	line:15
+__init__	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^    def __init__(self):$/;"	kind:member	line:31
+__init__	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^    def __init__(self):$/;"	kind:member	line:45
+__init__	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def __init__(self, nr_mixture = 10,$/;"	kind:member	line:39
+__init__	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def __init__(self):$/;"	kind:member	line:491
+__init__	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def __init__(self, main):$/;"	kind:member	line:30
+__init__	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def __init__(self, parent=None):$/;"	kind:member	line:52
+__init__	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def __init__(self,parent = None):$/;"	kind:member	line:476
+__init__	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def __init__(self):$/;"	kind:member	line:32
+__init__	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^    def __init__(self, gmm_order = 32):$/;"	kind:member	line:13
+__init__	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    def __init__(self, n_component, n_iter):$/;"	kind:member	line:12
+__init__	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def __init__(self, **kwargs):$/;"	kind:member	line:134
+__init__	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def __init__(self, frame_duration = 0.02, frame_time_shift = 0.01,$/;"	kind:member	line:21
+__init__	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def __init__(self, size):$/;"	kind:member	line:123
+__init__	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def __init__(self, size):$/;"	kind:member	line:127
+__init__	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def __init__(self, size, greater = lambda a, b: a > b):$/;"	kind:member	line:96
+__init__	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def __init__(self, gmm_order = 32):$/;"	kind:member	line:28
+__init__	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def __init__(self):$/;"	kind:member	line:68
+__init__	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def __init__(self, sample=None, name=None, gender=None):$/;"	kind:member	line:21
+__init__	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    def __init__(self, worker, nr_worker = cpu_count()):$/;"	kind:member	line:12
+__init__	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def __init__(self, fs = None, signal = None):$/;"	kind:member	line:12
+__init__	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def __init__(self, gmm_order = 32):$/;"	kind:member	line:80
+__init__	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def __init__(self, sample = None, name = None, gender = None):$/;"	kind:member	line:31
+__init__	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def __init__(self, gmm_order = 32, gmm_impl=GMM):$/;"	kind:member	line:77
+__init__	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def __init__(self, sample = None, name = None, gender = None):$/;"	kind:member	line:28
+__init__	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def __init__(self, gmm_order = 32):$/;"	kind:member	line:74
+__init__	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def __init__(self, sample = None, name = None, gender = None):$/;"	kind:member	line:25
+__init__	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def __init__(self, gmm_order = 32):$/;"	kind:member	line:75
+__init__	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def __init__(self, sample = None, name = None, gender = None):$/;"	kind:member	line:26
+__init__	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^    def __init__(self, sample = None, name = None, gender = None):$/;"	kind:member	line:19
+__init__	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def __init__(self, gmm_order=32, ubm=None,$/;"	kind:member	line:17
+__init__.py	../TRECVID/speaker-recognition-master/src/feature/__init__.py	1;"	kind:file	line:1
+__init__.py	../TRECVID/speaker-recognition-master/src/filters/__init__.py	1;"	kind:file	line:1
+__init__.py	../TRECVID/speaker-recognition-master/src/gmm/__init__.py	1;"	kind:file	line:1
+__init__.py	../TRECVID/speaker-recognition-master/src/gmm/python/__init__.py	1;"	kind:file	line:1
+__init__.py	../TRECVID/speaker-recognition-master/src/gui/__init__.py	1;"	kind:file	line:1
+_compute	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def _compute(self, data):$/;"	kind:member	line:82
+_double_array_python_to_ctype	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def _double_array_python_to_ctype(self, X_py):$/;"	kind:member	line:89
+_fields_	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    _fields_ = [("nr_instance", c_int),$/;"	kind:variable	line:19
+_fill_param_from_model_file	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def _fill_param_from_model_file(self, model_file):$/;"	kind:member	line:56
+_gen_param	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def _gen_param(self, X):$/;"	kind:member	line:97
+_get_gmm_set	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def _get_gmm_set(self):$/;"	kind:member	line:63
+_get_ltsd	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    def _get_ltsd(self, fs=None):$/;"	kind:member	line:71
+_init_window	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    def _init_window(self, fs):$/;"	kind:member	line:66
+_mel_filterbank	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^    def _mel_filterbank(self):$/;"	kind:member	line:81
+_mononize_signal	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    def _mononize_signal(self, signal):$/;"	kind:member	line:77
+_worker	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    def _worker(self):$/;"	kind:member	line:39
+_write	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def _write(self, data, task_name, dirname):$/;"	kind:member	line:102
+adapt-ubm.py	../TRECVID/speaker-recognition-master/src/testbench/adapt-ubm.py	1;"	kind:file	line:1
+add	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def add(self, sample):$/;"	kind:member	line:28
+addUserInfo	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def addUserInfo(self):$/;"	kind:member	line:375
+add_record_data	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def add_record_data(self, i):$/;"	kind:member	line:145
+add_sample	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    def add_sample(self, sample):$/;"	kind:member	line:17
+add_sample	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def add_sample(self, sample):$/;"	kind:member	line:27
+add_sample	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def add_sample(self, sample):$/;"	kind:member	line:37
+add_sample	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def add_sample(self, sample):$/;"	kind:member	line:34
+add_sample	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def add_sample(self, sample):$/;"	kind:member	line:31
+add_sample	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def add_sample(self, sample):$/;"	kind:member	line:32
+add_sample	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^    def add_sample(self, sample):$/;"	kind:member	line:25
+add_white_noise	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^def add_white_noise(signal):$/;"	kind:function	line:95
+after_pickle	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^    def after_pickle(self):$/;"	kind:member	line:30
+after_pickle	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def after_pickle(self):$/;"	kind:member	line:104
+app	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    app = QApplication(sys.argv)$/;"	kind:variable	line:673
+append	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def append(self, ind, val = None):$/;"	kind:member	line:101
+args	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^    args = get_args()$/;"	kind:variable	line:85
+auto_tune_parameter	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def auto_tune_parameter(self, X, y):$/;"	kind:member	line:44
+autocorr	../TRECVID/speaker-recognition-master/src/lpcc/lpc_jp.py	/^def autocorr(x, nlags=None):$/;"	kind:function	line:13
+before_pickle	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^    def before_pickle(self):$/;"	kind:member	line:27
+before_pickle	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def before_pickle(self):$/;"	kind:member	line:101
+bob_19_6000_40	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^def bob_19_6000_40(tup):$/;"	kind:function	line:168
+cached_func	../TRECVID/speaker-recognition-master/src/feature/utils.py	/^def cached_func(function):$/;"	kind:function	line:11
+clearUserInfo	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def clearUserInfo(self):$/;"	kind:member	line:369
+cluster_by_label	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def cluster_by_label(self, X, y):$/;"	kind:member	line:39
+cluster_by_label	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def cluster_by_label(self, X, y):$/;"	kind:member	line:91
+cluster_by_label	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def cluster_by_label(self, X, y):$/;"	kind:member	line:89
+cluster_by_label	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def cluster_by_label(self, X, y):$/;"	kind:member	line:85
+cluster_by_label	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def cluster_by_label(self, X, y):$/;"	kind:member	line:86
+cluster_by_label	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def cluster_by_label(self, X, y):$/;"	kind:member	line:36
+compilation_database_folder	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	kind:variable	line:66
+compilation_database_folder	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	kind:variable	line:69
+compute	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def compute(self, fs, signal):$/;"	kind:member	line:28
+computeMissScore	../Lab5-CacheLab/cachelab-handout/driver.py	/^def computeMissScore(miss, lower, upper, full_score):$/;"	kind:function	line:20
+compute_features	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def compute_features(self):$/;"	kind:member	line:74
+concurrency	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^concurrency = multiprocessing.cpu_count()$/;"	kind:variable	line:20
+concurrency	../TRECVID/speaker-recognition-master/src/test/extract-mfcc-data.py	/^concurrency = 8$/;"	kind:variable	line:20
+concurrency	../TRECVID/speaker-recognition-master/src/test/plot.py	/^concurrency = 4$/;"	kind:variable	line:18
+concurrency	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^concurrency = multiprocessing.cpu_count()$/;"	kind:variable	line:27
+concurrency	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^concurrency = multiprocessing.cpu_count()$/;"	kind:variable	line:20
+concurrency	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^concurrency = multiprocessing.cpu_count()$/;"	kind:variable	line:20
+concurrency	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^concurrency = multiprocessing.cpu_count()$/;"	kind:variable	line:22
+config.py	../TRECVID/speaker-recognition-master/src/testbench/config.py	1;"	kind:file	line:1
+database	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^  database = None$/;"	kind:variable	line:71
+database	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	kind:variable	line:69
+database	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^  database = None$/;"	kind:variable	line:74
+database	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	kind:variable	line:72
+dataset	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    dataset = DataSet()$/;"	kind:variable	line:128
+datautil.py	../TRECVID/speaker-recognition-master/src/testbench/datautil.py	1;"	kind:file	line:1
+dctmtx	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^    def dctmtx(n):$/;"	kind:member	line:108
+diff_feature	../TRECVID/speaker-recognition-master/src/feature/utils.py	/^def diff_feature(feat, nd=1):$/;"	kind:function	line:24
+dirname	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^dirname = path.dirname(path.abspath(__file__))$/;"	kind:variable	line:14
+dirname	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    dirname = 'models'$/;"	kind:variable	line:64
+do_conversation	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def do_conversation(self):$/;"	kind:member	line:179
+do_enroll	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def do_enroll(self):$/;"	kind:member	line:294
+do_plot	../TRECVID/speaker-recognition-master/src/gmm/plot-point-3d.py	/^def do_plot(data_x, data_y, data_z, args):$/;"	kind:function	line:71
+do_plot	../TRECVID/speaker-recognition-master/src/gmm/plot-point.py	/^def do_plot(data_x, data_y, args):$/;"	kind:function	line:57
+do_plot	../TRECVID/speaker-recognition-master/src/nn/plot-point-3d.py	/^def do_plot(data_x, data_y, data_z, args):$/;"	kind:function	line:71
+do_plot	../TRECVID/speaker-recognition-master/src/nn/plot-point.py	/^def do_plot(data_x, data_y, args):$/;"	kind:function	line:57
+do_test	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^def do_test(X_train, y_train, X_test, y_test):$/;"	kind:function	line:64
+dprint	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^    def dprint(self, msg):$/;"	kind:member	line:44
+dprint	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def dprint(self, msg):$/;"	kind:member	line:90
+drawWidget	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def drawWidget(self, qp):$/;"	kind:member	line:582
+driver.py	../Lab5-CacheLab/cachelab-handout/driver.py	1;"	kind:file	line:1
+dump	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def dump(self, model_file):$/;"	kind:member	line:68
+dump	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def dump(self):$/;"	kind:member	line:406
+dump	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def dump(self, fname):$/;"	kind:member	line:96
+dump_gmm	../TRECVID/speaker-recognition-master/src/gmm/sklearn-gmm.py	/^def dump_gmm(gmm):$/;"	kind:function	line:14
+dump_paras	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    def dump_paras(self, dirname):$/;"	kind:member	line:33
+dumps	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def dumps(self):$/;"	kind:member	line:71
+duration	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def duration(self):$/;"	kind:member	line:25
+enroll	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def enroll(self, name, fs, signal):$/;"	kind:member	line:55
+enroll_duration	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    enroll_duration = 30$/;"	kind:variable	line:120
+enroll_file	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def enroll_file(self):$/;"	kind:member	line:275
+evaluate-feature-baseline.py	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	1;"	kind:file	line:1
+extend_X	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	/^def extend_X(X, n):$/;"	kind:function	line:38
+extract	../TRECVID/speaker-recognition-master/src/feature/BOB.py	/^def extract(fs, signal=None, diff=False, **kwargs):$/;"	kind:function	line:21
+extract	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    def extract(self, signal):$/;"	kind:member	line:46
+extract	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^def extract(fs, signal=None, diff=False, **kwargs):$/;"	kind:function	line:66
+extract	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^    def extract(self, signal):$/;"	kind:member	line:49
+extract	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^def extract(fs, signal=None, diff=False, **kwargs):$/;"	kind:function	line:123
+extract-mfcc-data.py	../TRECVID/speaker-recognition-master/src/test/extract-mfcc-data.py	1;"	kind:file	line:1
+extract_mfcc_data	../TRECVID/speaker-recognition-master/src/test/extract-mfcc-data.py	/^def extract_mfcc_data(dirname, mfcc_output_dir):$/;"	kind:function	line:40
+extractor	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    extractor = LPCCExtractor(8000)$/;"	kind:variable	line:78
+f	../TRECVID/speaker-recognition-master/src/feature/__init__.py	/^    def f(tup):$/;"	kind:function	line:21
+filter	../TRECVID/speaker-recognition-master/src/filters/VAD.py	/^    def filter(self, fs, signal):$/;"	kind:member	line:27
+filter	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    def filter(self, signal):$/;"	kind:member	line:52
+filter	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^    def filter(self, fs, signal):$/;"	kind:member	line:25
+filter	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def filter(self, fs, signal):$/;"	kind:member	line:43
+filter_valid_range	../TRECVID/speaker-recognition-master/src/gmm/plot-point-3d.py	/^def filter_valid_range(points, rect):$/;"	kind:function	line:61
+filter_valid_range	../TRECVID/speaker-recognition-master/src/gmm/plot-point.py	/^def filter_valid_range(points, rect):$/;"	kind:function	line:47
+filter_valid_range	../TRECVID/speaker-recognition-master/src/nn/plot-point-3d.py	/^def filter_valid_range(points, rect):$/;"	kind:function	line:61
+filter_valid_range	../TRECVID/speaker-recognition-master/src/nn/plot-point.py	/^def filter_valid_range(points, rect):$/;"	kind:function	line:47
+fit	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def fit(self, X, ubm=None):$/;"	kind:member	line:108
+fit	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    def fit(self):$/;"	kind:member	line:20
+fit	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def fit(self, X, y):$/;"	kind:member	line:47
+fit	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def fit(self, X, y):$/;"	kind:member	line:99
+fit	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def fit(self, X, y):$/;"	kind:member	line:97
+fit	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def fit(self, X, y):$/;"	kind:member	line:93
+fit	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def fit(self, X, y):$/;"	kind:member	line:94
+fit	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def fit(self, X, y):$/;"	kind:member	line:49
+fit_new	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:18
+fit_new	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:33
+fit_new	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:85
+fit_new	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:83
+fit_new	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:79
+fit_new	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:80
+fit_new	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def fit_new(self, x, label):$/;"	kind:member	line:30
+flags	../TRECVID/speaker-recognition-master/src/gmm/.ycm_extra_conf.py	/^flags = [$/;"	kind:variable	line:37
+flags	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^flags = [$/;"	kind:variable	line:40
+formatter_class	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                                    formatter_class=argparse.RawDescriptionHelpFormatter)$/;"	kind:variable	line:35
+frame_duration	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^frame_duration = 0.032$/;"	kind:variable	line:7
+frame_shift	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^frame_shift = 0.016$/;"	kind:variable	line:8
+from_wavfile	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def from_wavfile(fname):$/;"	kind:member	line:19
+front_val	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def front_val(self, ind):$/;"	kind:member	line:112
+fs	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    fs = 0$/;"	kind:variable	line:23
+fs	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^fs = 8000$/;"	kind:variable	line:10
+gen-features-file.py	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	1;"	kind:file	line:1
+gen_data	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^def gen_data(params):$/;"	kind:function	line:113
+gen_data	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^def gen_data(params):$/;"	kind:function	line:111
+gen_data	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^def gen_data(params):$/;"	kind:function	line:107
+gen_data	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^def gen_data(params):$/;"	kind:function	line:108
+getWidget	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def getWidget(self, splash):$/;"	kind:member	line:314
+get_Z	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^    def get_Z(X, Y, gaussian):$/;"	kind:function	line:92
+get_all_data_fpaths	../TRECVID/speaker-recognition-master/src/testbench/train-ubm.py	/^def get_all_data_fpaths():$/;"	kind:function	line:33
+get_args	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^def get_args():$/;"	kind:function	line:18
+get_args	../TRECVID/speaker-recognition-master/src/gmm/plot-point-3d.py	/^def get_args():$/;"	kind:function	line:10
+get_args	../TRECVID/speaker-recognition-master/src/gmm/plot-point.py	/^def get_args():$/;"	kind:function	line:9
+get_args	../TRECVID/speaker-recognition-master/src/nn/plot-point-3d.py	/^def get_args():$/;"	kind:function	line:10
+get_args	../TRECVID/speaker-recognition-master/src/nn/plot-point.py	/^def get_args():$/;"	kind:function	line:9
+get_args	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^def get_args():$/;"	kind:function	line:21
+get_avatar	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def get_avatar(self, username):$/;"	kind:member	line:451
+get_avatar	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def get_avatar(self, username):$/;"	kind:member	line:575
+get_bob_extractor	../TRECVID/speaker-recognition-master/src/feature/BOB.py	/^def get_bob_extractor(fs, win_length_ms=32, win_shift_ms=16,$/;"	kind:function	line:13
+get_corpus	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^def get_corpus(dirs):$/;"	kind:function	line:46
+get_corpus	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^def get_corpus(dirs):$/;"	kind:function	line:57
+get_corpus	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^def get_corpus(dirs):$/;"	kind:function	line:54
+get_corpus	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^def get_corpus(dirs):$/;"	kind:function	line:51
+get_corpus	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^def get_corpus(dirs):$/;"	kind:function	line:52
+get_corpus	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^def get_corpus():$/;"	kind:function	line:38
+get_dim	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def get_dim(self):$/;"	kind:member	line:135
+get_extractor	../TRECVID/speaker-recognition-master/src/feature/__init__.py	/^def get_extractor(extract_func, **kwargs):$/;"	kind:function	line:20
+get_fragment	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:37
+get_fragment	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:41
+get_fragment	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:47
+get_fragment	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:44
+get_fragment	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:41
+get_fragment	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:42
+get_fragment	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^    def get_fragment(self, duration):$/;"	kind:member	line:35
+get_fragment_with_interval	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def get_fragment_with_interval(self, duration):$/;"	kind:member	line:40
+get_fragment_with_interval	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def get_fragment_with_interval(self, duration):$/;"	kind:member	line:35
+get_fragment_with_interval	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def get_fragment_with_interval(self, duration):$/;"	kind:member	line:50
+get_fragment_with_interval	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def get_fragment_with_interval(self, duration):$/;"	kind:member	line:47
+get_fragment_with_interval	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def get_fragment_with_interval(self, duration):$/;"	kind:member	line:44
+get_fragment_with_interval	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def get_fragment_with_interval(self, duration):$/;"	kind:member	line:45
+get_gmm	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	/^def get_gmm(where):$/;"	kind:function	line:18
+get_gmm	../TRECVID/speaker-recognition-master/src/testbench/train-ubm.py	/^def get_gmm():$/;"	kind:function	line:19
+get_interval	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def get_interval(self, begin, end):$/;"	kind:member	line:51
+get_lpc_extractor	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^def get_lpc_extractor(fs, win_length_ms=32, win_shift_ms=16,$/;"	kind:function	line:60
+get_mfcc	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def get_mfcc(nr_male = 10, nr_female = 10):$/;"	kind:function	line:26
+get_mfcc_extractor	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^def get_mfcc_extractor(fs, win_length_ms=32, win_shift_ms=16,$/;"	kind:function	line:116
+get_mfcc_worker	../TRECVID/speaker-recognition-master/src/test/extract-mfcc-data.py	/^def get_mfcc_worker(params):$/;"	kind:function	line:30
+get_mfcc_worker	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def get_mfcc_worker(fpath):$/;"	kind:function	line:20
+get_noise_max	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^        def get_noise_max(D, L, b, e):$/;"	kind:function	line:187
+get_nr_mixtures	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def get_nr_mixtures(self):$/;"	kind:member	line:138
+get_plot_data	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def get_plot_data(mfcc, ind, pieces = 20):$/;"	kind:function	line:35
+get_speaking_filter	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	/^def get_speaking_filter(frame_duration = 0.02, frame_shift = 0.01, perc = 0.05):$/;"	kind:function	line:32
+get_speech_min	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^        def get_speech_min(D, L, b, e):$/;"	kind:function	line:178
+get_threshold_percentage_filter	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	/^def get_threshold_percentage_filter(perc):$/;"	kind:function	line:22
+get_training_data_fpaths	../TRECVID/speaker-recognition-master/src/testbench/adapt-ubm.py	/^def get_training_data_fpaths():$/;"	kind:function	line:15
+get_training_data_fpaths	../TRECVID/speaker-recognition-master/src/testbench/test-gmm.py	/^def get_training_data_fpaths():$/;"	kind:function	line:17
+gmm	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    gmm = None$/;"	kind:variable	line:38
+gmm	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^gmm = GMM(32, verbosity=1)$/;"	kind:variable	line:66
+gmm	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^gmm = GMM(32, verbosity=1)$/;"	kind:variable	line:75
+gmm_score	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:24
+gmm_score	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:52
+gmm_score	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:104
+gmm_score	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:102
+gmm_score	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:98
+gmm_score	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:99
+gmm_score	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def gmm_score(self, gmm, x):$/;"	kind:member	line:56
+gmmset.py	../TRECVID/speaker-recognition-master/src/gui/gmmset.py	1;"	kind:file	line:1
+gmmset.py	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	1;"	kind:file	line:1
+gui.py	../TRECVID/speaker-recognition-master/src/gui/gui.py	1;"	kind:file	line:1
+hamming	../TRECVID/speaker-recognition-master/src/feature/MFCC.py	/^def hamming(n):$/;"	kind:function	line:14
+help	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                       help='Input Files(to predict) or Directories(to enroll)',$/;"	kind:variable	line:42
+help	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                       help='Model file to save(in enroll) or use(in predict)',$/;"	kind:variable	line:46
+help	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                       help='Task to do. Either "enroll" or "predict"',$/;"	kind:variable	line:38
+initUI	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def initUI(self):$/;"	kind:member	line:512
+init_noise	../TRECVID/speaker-recognition-master/src/filters/VAD.py	/^    def init_noise(self, fs, signal):$/;"	kind:member	line:20
+init_noise	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^    def init_noise(self, fs, signal):$/;"	kind:member	line:21
+init_noise	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def init_noise(self, fs, signal):$/;"	kind:member	line:37
+init_params_by_noise	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    def init_params_by_noise(self, fs, noise_signal):$/;"	kind:member	line:32
+interface.py	../TRECVID/speaker-recognition-master/src/gui/interface.py	1;"	kind:file	line:1
+kwd_mark	../TRECVID/speaker-recognition-master/src/feature/utils.py	/^kwd_mark = object()$/;"	kind:variable	line:9
+lambda0	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    lambda0 = 0$/;"	kind:variable	line:27
+lambda1	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    lambda1 = 0$/;"	kind:variable	line:28
+load	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def load(model_file):$/;"	kind:member	line:61
+load	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def load(self):$/;"	kind:member	line:416
+load	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def load(fname):$/;"	kind:member	line:104
+loadUsers	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def loadUsers(self):$/;"	kind:member	line:329
+load_avatar	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def load_avatar(self, dirname):$/;"	kind:member	line:444
+load_avatar	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def load_avatar(self, dirname):$/;"	kind:member	line:569
+load_gmm	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def load_gmm(self, label, fname):$/;"	kind:member	line:86
+load_gmmset	../TRECVID/speaker-recognition-master/src/testbench/test-gmm.py	/^def load_gmmset(labels, nr_person):$/;"	kind:function	line:28
+load_noise	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def load_noise(self):$/;"	kind:member	line:438
+load_train_test	../TRECVID/speaker-recognition-master/src/testbench/datautil.py	/^def load_train_test(fname, training_data_len, nr_test, testcase_len):$/;"	kind:function	line:15
+loads	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def loads(s):$/;"	kind:member	line:80
+lpcOrder	../TRECVID/speaker-recognition-master/src/lpcc/lpc_jp.py	/^    lpcOrder = 16  # LPC係数の次数$/;"	kind:variable	line:75
+lpc_jp.py	../TRECVID/speaker-recognition-master/src/lpcc/lpc_jp.py	1;"	kind:file	line:1
+lpc_to_cc	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    def lpc_to_cc(self, lpc):$/;"	kind:member	line:27
+lpc_to_cc	../TRECVID/speaker-recognition-master/src/lpcc/lpcc.py	/^def lpc_to_cc(lpc):$/;"	kind:function	line:17
+lpcc	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    def lpcc(self, signal):$/;"	kind:member	line:40
+lpcc	../TRECVID/speaker-recognition-master/src/lpcc/lpcc.py	/^def lpcc(signal):$/;"	kind:function	line:30
+lpcc.py	../TRECVID/speaker-recognition-master/src/lpcc/lpcc.py	1;"	kind:file	line:1
+ltsd	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    ltsd = None$/;"	kind:variable	line:20
+ltsd.py	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	1;"	kind:file	line:1
+m	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    m = ModelInterface()$/;"	kind:variable	line:113
+main	../Lab5-CacheLab/cachelab-handout/driver.py	/^def main():$/;"	kind:function	line:33
+main	../TRECVID/speaker-recognition-master/src/data/remove-silence.py	/^def main():$/;"	kind:function	line:67
+main	../TRECVID/speaker-recognition-master/src/data/split-data.py	/^def main():$/;"	kind:function	line:86
+main	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^def main():$/;"	kind:function	line:83
+main	../TRECVID/speaker-recognition-master/src/filters/silence.py	/^def main():$/;"	kind:function	line:58
+main	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^def main():$/;"	kind:function	line:77
+main	../TRECVID/speaker-recognition-master/src/gmm/plot-point-3d.py	/^def main():$/;"	kind:function	line:157
+main	../TRECVID/speaker-recognition-master/src/gmm/plot-point.py	/^def main():$/;"	kind:function	line:127
+main	../TRECVID/speaker-recognition-master/src/gmm/sklearn-gmm.py	/^def main():$/;"	kind:function	line:22
+main	../TRECVID/speaker-recognition-master/src/gui/plot-wav.py	/^def main():$/;"	kind:function	line:12
+main	../TRECVID/speaker-recognition-master/src/lpcc/lpcc.py	/^def main():$/;"	kind:function	line:37
+main	../TRECVID/speaker-recognition-master/src/nn/plot-point-3d.py	/^def main():$/;"	kind:function	line:157
+main	../TRECVID/speaker-recognition-master/src/nn/plot-point.py	/^def main():$/;"	kind:function	line:127
+main	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^def main():$/;"	kind:function	line:89
+main	../TRECVID/speaker-recognition-master/src/test/extract-mfcc-data.py	/^def main():$/;"	kind:function	line:49
+main	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def main():$/;"	kind:function	line:100
+main	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^def main():$/;"	kind:function	line:156
+main	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^def main():$/;"	kind:function	line:171
+main	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^def main():$/;"	kind:function	line:149
+main	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^def main():$/;"	kind:function	line:147
+main	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^def main():$/;"	kind:function	line:103
+main	../TRECVID/speaker-recognition-master/src/testbench/adapt-ubm.py	/^def main():$/;"	kind:function	line:25
+main	../TRECVID/speaker-recognition-master/src/testbench/datautil.py	/^def main():$/;"	kind:function	line:30
+main	../TRECVID/speaker-recognition-master/src/testbench/test-gmm.py	/^def main():$/;"	kind:function	line:40
+main	../TRECVID/speaker-recognition-master/src/testbench/train-ubm.py	/^def main():$/;"	kind:function	line:53
+mapp	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    mapp = Main()$/;"	kind:variable	line:680
+mix	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def mix(tup):$/;"	kind:function	line:188
+mix	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def mix(tup):$/;"	kind:function	line:181
+mix	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^        def mix(tup):$/;"	kind:function	line:182
+mix_feature	../TRECVID/speaker-recognition-master/src/feature/__init__.py	/^def mix_feature(tup):$/;"	kind:function	line:25
+mix_feature	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^def mix_feature(tup):$/;"	kind:function	line:15
+mkdirp	../TRECVID/speaker-recognition-master/src/data/remove-silence.py	/^def mkdirp(dirname):$/;"	kind:function	line:15
+mkdirp	../TRECVID/speaker-recognition-master/src/data/split-data.py	/^def mkdirp(dirname):$/;"	kind:function	line:16
+mkdirp	../TRECVID/speaker-recognition-master/src/test/extract-mfcc-data.py	/^def mkdirp(path):$/;"	kind:function	line:22
+monophonic	../TRECVID/speaker-recognition-master/src/gui/utils.py	/^def monophonic(signal):$/;"	kind:function	line:23
+monotize_signal	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^def monotize_signal(signal):$/;"	kind:function	line:20
+multiprocess.py	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	1;"	kind:file	line:1
+n_lpc	../TRECVID/speaker-recognition-master/src/lpcc/lpcc.py	/^n_lpc = 10$/;"	kind:variable	line:14
+n_lpcc	../TRECVID/speaker-recognition-master/src/lpcc/lpcc.py	/^n_lpcc = 14$/;"	kind:variable	line:15
+noise_clicked	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def noise_clicked(self):$/;"	kind:member	line:426
+noise_signal	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    noise_signal = None$/;"	kind:variable	line:30
+noisered.py	../TRECVID/speaker-recognition-master/src/filters/noisered.py	1;"	kind:file	line:1
+nop-server.py	../Lab8-ProxyLab/proxylab-handout/nop-server.py	1;"	kind:file	line:1
+nr	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^    nr = NoiseReduction()$/;"	kind:variable	line:43
+nr_enroll	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    nr_enroll = 30 #$/;"	kind:variable	line:119
+nr_frame_per_sec	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^nr_frame_per_sec = int(1.0 \/ frame_shift)$/;"	kind:variable	line:9
+nr_mixture	../TRECVID/speaker-recognition-master/src/testbench/train-ubm.py	/^nr_mixture = 32$/;"	kind:variable	line:17
+nr_test	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^nr_test = 50$/;"	kind:variable	line:13
+nr_test_fragment_per_person	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    nr_test_fragment_per_person = 100 #$/;"	kind:variable	line:124
+nr_train_fragment	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    nr_train_fragment = 20$/;"	kind:variable	line:121
+nr_worker	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    nr_worker = None$/;"	kind:variable	line:7
+order	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    order = 5$/;"	kind:variable	line:21
+paintEvent	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def paintEvent(self, e):$/;"	kind:member	line:562
+parser	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^    parser = argparse.ArgumentParser(description=desc,epilog=epilog,$/;"	kind:variable	line:34
+persons	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    persons = get_corpus(['..\/corpus.silence-removed\/Style_Reading'])$/;"	kind:variable	line:126
+pixmap	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    pixmap = QtGui.QPixmap(u"image\/startup.jpg")$/;"	kind:variable	line:675
+play_wav	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^def play_wav(fname):$/;"	kind:function	line:63
+plot-gmm.py	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	1;"	kind:file	line:1
+plot-point-3d.py	../TRECVID/speaker-recognition-master/src/gmm/plot-point-3d.py	1;"	kind:file	line:1
+plot-point-3d.py	../TRECVID/speaker-recognition-master/src/nn/plot-point-3d.py	1;"	kind:file	line:1
+plot-point.py	../TRECVID/speaker-recognition-master/src/gmm/plot-point.py	1;"	kind:file	line:1
+plot-point.py	../TRECVID/speaker-recognition-master/src/nn/plot-point.py	1;"	kind:file	line:1
+plot-wav.py	../TRECVID/speaker-recognition-master/src/gui/plot-wav.py	1;"	kind:file	line:1
+plot.py	../TRECVID/speaker-recognition-master/src/test/plot.py	1;"	kind:file	line:1
+plot2D_diff_speaker	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def plot2D_diff_speaker(mfccs, dim0, dim1, fname):$/;"	kind:function	line:91
+plot2D_same_speaker	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def plot2D_same_speaker(mfcc, fname_prefix):$/;"	kind:function	line:79
+plot2D_same_speaker_worker	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def plot2D_same_speaker_worker(x, y, fname):$/;"	kind:function	line:73
+plot_diff_speaker	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def plot_diff_speaker(mfcc_male, mfcc_female):$/;"	kind:function	line:46
+plot_ltsd	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    def plot_ltsd(self, fs, signal):$/;"	kind:member	line:46
+plot_same_speaker	../TRECVID/speaker-recognition-master/src/test/plot.py	/^def plot_same_speaker(mfcc, fname_prefix, length = 5000):$/;"	kind:function	line:60
+predict	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def predict(self, fs, signal):$/;"	kind:member	line:85
+predict	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def predict(self, X):$/;"	kind:member	line:58
+predict	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def predict(self, X):$/;"	kind:member	line:110
+predict	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def predict(self, X):$/;"	kind:member	line:108
+predict	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def predict(self, X):$/;"	kind:member	line:104
+predict	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def predict(self, X):$/;"	kind:member	line:105
+predict	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def predict(self, X):$/;"	kind:member	line:66
+predict_one	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	/^    def predict_one(self, x):$/;"	kind:member	line:33
+predict_one	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^    def predict_one(self, x):$/;"	kind:member	line:54
+predict_one	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def predict_one(self, x):$/;"	kind:member	line:106
+predict_one	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def predict_one(self, x):$/;"	kind:member	line:104
+predict_one	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def predict_one(self, x):$/;"	kind:member	line:100
+predict_one	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def predict_one(self, x):$/;"	kind:member	line:101
+predict_one	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def predict_one(self, x):$/;"	kind:member	line:62
+predict_one	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def predict_one(self, x):$/;"	kind:member	line:95
+predict_one_scores	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def predict_one_scores(self, x):$/;"	kind:member	line:59
+predict_one_with_rejection	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def predict_one_with_rejection(self, x):$/;"	kind:member	line:69
+predict_task	../TRECVID/speaker-recognition-master/src/test/evaluate-feature-baseline.py	/^def predict_task(gmmset, x_test):$/;"	kind:function	line:61
+predict_task	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^def predict_task(gmmset, x_test):$/;"	kind:function	line:117
+predict_task	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^def predict_task(gmmset, x_test):$/;"	kind:function	line:115
+predict_task	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^def predict_task(gmmset, x_test):$/;"	kind:function	line:111
+predict_task	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^def predict_task(gmmset, x_test):$/;"	kind:function	line:112
+predict_with_reject	../TRECVID/speaker-recognition-master/src/testbench/gmmset.py	/^    def predict_with_reject(self, X):$/;"	kind:member	line:83
+predicted	../TRECVID/speaker-recognition-master/src/lpcc/lpc_jp.py	/^    predicted = np.copy(original)$/;"	kind:variable	line:90
+printDebug	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def printDebug(self):$/;"	kind:member	line:458
+probability_of	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^    def probability_of(self, x):$/;"	kind:member	line:38
+pygmm	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^pygmm = cdll.LoadLibrary(path.join(dirname, '..\/lib\/pygmm.so'))$/;"	kind:variable	line:16
+pygmm.py	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	1;"	kind:file	line:1
+r	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^r = Random()$/;"	kind:variable	line:18
+r	../TRECVID/speaker-recognition-master/src/lpcc/lpc_jp.py	/^    r = autocorr(original, lpcOrder + 1)$/;"	kind:variable	line:79
+random_vector	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	/^def random_vector(n, dim):$/;"	kind:function	line:31
+read_data	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^def read_data(fname):$/;"	kind:function	line:50
+read_data	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	/^def read_data(fname):$/;"	kind:function	line:14
+read_data	../TRECVID/speaker-recognition-master/src/gmm/sklearn-gmm.py	/^def read_data(fname):$/;"	kind:function	line:10
+read_data	../TRECVID/speaker-recognition-master/src/testbench/datautil.py	/^def read_data(pattern, nr_person, shuffle=True):$/;"	kind:function	line:58
+read_gaussian	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^def read_gaussian(fin):$/;"	kind:function	line:55
+read_model	../TRECVID/speaker-recognition-master/src/gmm/plot-gmm.py	/^def read_model(fname):$/;"	kind:function	line:67
+read_raw_data	../TRECVID/speaker-recognition-master/src/testbench/datautil.py	/^def read_raw_data(pattern):$/;"	kind:function	line:44
+read_wav	../TRECVID/speaker-recognition-master/src/gui/utils.py	/^def read_wav(fname):$/;"	kind:function	line:10
+reco_do_predict	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def reco_do_predict(self, fs, signal):$/;"	kind:member	line:227
+reco_file	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def reco_file(self):$/;"	kind:member	line:250
+reco_files	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def reco_files(self):$/;"	kind:member	line:260
+reco_remove_update	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def reco_remove_update(self, fs, signal):$/;"	kind:member	line:239
+remove-silence.py	../TRECVID/speaker-recognition-master/src/data/remove-silence.py	1;"	kind:file	line:1
+remove_silence	../TRECVID/speaker-recognition-master/src/data/remove-silence.py	/^def remove_silence(fs, signal,$/;"	kind:function	line:22
+remove_silence	../TRECVID/speaker-recognition-master/src/data/split-data.py	/^def remove_silence(fs, signal,$/;"	kind:function	line:23
+remove_silence	../TRECVID/speaker-recognition-master/src/filters/silence.py	/^def remove_silence(fs, signal,$/;"	kind:function	line:11
+remove_subsignal	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def remove_subsignal(self, begin, end):$/;"	kind:member	line:43
+remove_subsignal	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def remove_subsignal(self, begin, end):$/;"	kind:member	line:45
+remove_subsignal	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def remove_subsignal(self, begin, end):$/;"	kind:member	line:53
+remove_subsignal	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def remove_subsignal(self, begin, end):$/;"	kind:member	line:50
+remove_subsignal	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def remove_subsignal(self, begin, end):$/;"	kind:member	line:47
+remove_subsignal	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def remove_subsignal(self, begin, end):$/;"	kind:member	line:48
+removed	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^    removed = remove_silence(fs, vaded)$/;"	kind:variable	line:50
+required	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                       required=True)$/;"	kind:variable	line:39
+required	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                       required=True)$/;"	kind:variable	line:43
+required	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^                       required=True)$/;"	kind:variable	line:47
+reset	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def reset(self):$/;"	kind:member	line:501
+result	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    result = None   # queue of task results: (task id, result)$/;"	kind:variable	line:10
+ret	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    ret = extractor.extract(signal)$/;"	kind:variable	line:81
+ret	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^    ret = parser.parse_args()$/;"	kind:variable	line:49
+run	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def run(self):$/;"	kind:member	line:34
+run	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    def run(self, tasks):$/;"	kind:member	line:26
+sample.py	../TRECVID/speaker-recognition-master/src/test/sample.py	1;"	kind:file	line:1
+sample_adapter	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	/^def sample_adapter(func):$/;"	kind:function	line:14
+sample_adapter_wrapper	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	/^    def sample_adapter_wrapper(fs = None, signal = None):$/;"	kind:function	line:15
+sample_duration	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def sample_duration(self):$/;"	kind:member	line:34
+sample_duration	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def sample_duration(self):$/;"	kind:member	line:44
+sample_duration	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^    def sample_duration(self):$/;"	kind:member	line:41
+sample_duration	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^    def sample_duration(self):$/;"	kind:member	line:38
+sample_duration	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^    def sample_duration(self):$/;"	kind:member	line:39
+sample_duration	../TRECVID/speaker-recognition-master/src/test/vad-test.py	/^    def sample_duration(self):$/;"	kind:member	line:32
+score	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def score(self, X):$/;"	kind:member	line:120
+score_all	../TRECVID/speaker-recognition-master/src/gmm/python/pygmm.py	/^    def score_all(self, X):$/;"	kind:member	line:128
+serversocket	../Lab8-ProxyLab/proxylab-handout/nop-server.py	/^serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)$/;"	kind:variable	line:13
+showUserInfo	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def showUserInfo(self):$/;"	kind:member	line:336
+sigfilter.py	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	1;"	kind:file	line:1
+signal	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^signal = monotize_signal(signal)$/;"	kind:variable	line:71
+signal_filter	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	/^    def signal_filter(fs, signal):$/;"	kind:function	line:24
+signal_filter	../TRECVID/speaker-recognition-master/src/test/sigfilter.py	/^    def signal_filter(fs, signal):$/;"	kind:function	line:34
+silence.py	../TRECVID/speaker-recognition-master/src/filters/silence.py	1;"	kind:file	line:1
+skgmm.py	../TRECVID/speaker-recognition-master/src/gui/skgmm.py	1;"	kind:file	line:1
+sklearn-gmm.py	../TRECVID/speaker-recognition-master/src/gmm/sklearn-gmm.py	1;"	kind:file	line:1
+speaker-recognition.py	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	1;"	kind:file	line:1
+splash	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    splash = QtGui.QSplashScreen(pixmap)$/;"	kind:variable	line:676
+split-data.py	../TRECVID/speaker-recognition-master/src/data/split-data.py	1;"	kind:file	line:1
+split_wav	../TRECVID/speaker-recognition-master/src/data/split-data.py	/^def split_wav(fpath, outdir):$/;"	kind:function	line:62
+start	../TRECVID/speaker-recognition-master/src/feature/LPC.py	/^    start = time.time()$/;"	kind:variable	line:80
+start	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    def start(self):$/;"	kind:member	line:47
+start_conv_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def start_conv_record(self):$/;"	kind:member	line:165
+start_enroll_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def start_enroll_record(self):$/;"	kind:member	line:270
+start_reco_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def start_reco_record(self):$/;"	kind:member	line:217
+start_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def start_record(self):$/;"	kind:member	line:127
+start_train	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def start_train(self):$/;"	kind:member	line:308
+status	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def status(self, s=""):$/;"	kind:member	line:397
+stdin_fname	../TRECVID/speaker-recognition-master/src/gmm/plot-point-3d.py	/^stdin_fname = '$stdin$'$/;"	kind:variable	line:8
+stdin_fname	../TRECVID/speaker-recognition-master/src/gmm/plot-point.py	/^stdin_fname = '$stdin$'$/;"	kind:variable	line:7
+stdin_fname	../TRECVID/speaker-recognition-master/src/nn/plot-point-3d.py	/^stdin_fname = '$stdin$'$/;"	kind:variable	line:8
+stdin_fname	../TRECVID/speaker-recognition-master/src/nn/plot-point.py	/^stdin_fname = '$stdin$'$/;"	kind:variable	line:7
+stop_conv	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def stop_conv(self):$/;"	kind:member	line:175
+stop_enroll_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def stop_enroll_record(self):$/;"	kind:member	line:285
+stop_reco_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def stop_reco_record(self):$/;"	kind:member	line:222
+stop_record	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def stop_record(self):$/;"	kind:member	line:154
+task	../TRECVID/speaker-recognition-master/src/data/remove-silence.py	/^def task(fpath, new_fpath):$/;"	kind:function	line:61
+task	../TRECVID/speaker-recognition-master/src/data/split-data.py	/^def task(fpath, new_fpath):$/;"	kind:function	line:80
+task	../TRECVID/speaker-recognition-master/src/filters/silence.py	/^def task(fpath, new_fpath):$/;"	kind:function	line:52
+task	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^    task = args.task$/;"	kind:variable	line:87
+task	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    task = None     # queue of tasks: (task id, task arg)$/;"	kind:variable	line:9
+task_enroll	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^def task_enroll(input_dirs, output_model):$/;"	kind:function	line:52
+task_predict	../TRECVID/speaker-recognition-master/src/speaker-recognition.py	/^def task_predict(input_files, input_model):$/;"	kind:function	line:76
+test	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	/^def test():$/;"	kind:function	line:53
+test-feature.py	../TRECVID/speaker-recognition-master/src/test/test-feature.py	1;"	kind:file	line:1
+test-gmm.py	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	1;"	kind:file	line:1
+test-gmm.py	../TRECVID/speaker-recognition-master/src/testbench/test-gmm.py	1;"	kind:file	line:1
+test-mixture.py	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	1;"	kind:file	line:1
+test-nperson.py	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	1;"	kind:file	line:1
+test-reject.py	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	1;"	kind:file	line:1
+test.py	../TRECVID/speaker-recognition-master/src/gmm/python/test.py	1;"	kind:file	line:1
+test_bob_nceps	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def test_bob_nceps():$/;"	kind:function	line:201
+test_bob_nfilter	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def test_bob_nfilter():$/;"	kind:function	line:193
+test_bob_win	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def test_bob_win():$/;"	kind:function	line:209
+test_duration	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    test_duration = 5$/;"	kind:variable	line:123
+test_duration	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^test_duration = 5.0$/;"	kind:variable	line:14
+test_feature	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^def test_feature(feature_impl, X_train, y_train, X_test, y_test):$/;"	kind:function	line:120
+test_feature	../TRECVID/speaker-recognition-master/src/test/test-mixture.py	/^def test_feature(feature_impl, X_train, y_train, X_test, y_test):$/;"	kind:function	line:114
+test_feature	../TRECVID/speaker-recognition-master/src/test/test-nperson.py	/^def test_feature(feature_impl, X_train, y_train, X_test, y_test):$/;"	kind:function	line:115
+test_gmm	../TRECVID/speaker-recognition-master/src/test/test-gmm.py	/^def test_gmm(X_train, y_train, X_test, y_test):$/;"	kind:function	line:118
+test_lpc_dim	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def test_lpc_dim():$/;"	kind:function	line:225
+test_lpc_win	../TRECVID/speaker-recognition-master/src/test/test-feature.py	/^    def test_lpc_win():$/;"	kind:function	line:217
+test_ubm_var_channel	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^def test_ubm_var_channel():$/;"	kind:function	line:25
+testcase_len	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^testcase_len = int(test_duration * nr_frame_per_sec)$/;"	kind:variable	line:15
+thisdir	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^thisdir = os.path.dirname(thisfile)$/;"	kind:variable	line:35
+thisfile	../TRECVID/speaker-recognition-master/src/nn/src/.ycm_extra_conf.py	/^thisfile = os.path.abspath(__file__)$/;"	kind:variable	line:34
+time2string	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def time2string(self,time):$/;"	kind:member	line:553
+time_str	../TRECVID/speaker-recognition-master/src/gui/utils.py	/^def time_str(seconds):$/;"	kind:function	line:18
+timer_callback	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def timer_callback(self):$/;"	kind:member	line:149
+timer_out	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def timer_out(self):$/;"	kind:member	line:534
+train	../TRECVID/speaker-recognition-master/src/gui/interface.py	/^    def train(self):$/;"	kind:member	line:77
+train-ubm.py	../TRECVID/speaker-recognition-master/src/testbench/train-ubm.py	1;"	kind:file	line:1
+train_all_together_ubm	../TRECVID/speaker-recognition-master/src/testbench/train-ubm.py	/^def train_all_together_ubm():$/;"	kind:function	line:41
+train_duration	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    train_duration = 10$/;"	kind:variable	line:122
+train_duration	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^train_duration = 30.0$/;"	kind:variable	line:11
+train_from_file	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    def train_from_file(train_lst, n_component, n_iter):$/;"	kind:member	line:50
+train_len	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^train_len = int(train_duration * nr_frame_per_sec)$/;"	kind:variable	line:12
+ubm	../TRECVID/speaker-recognition-master/src/test/UBM.py	/^    ubm = UBM.train_from_file('feature-data\/enroll.lst', 256, 100)$/;"	kind:variable	line:63
+ubm	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^ubm = GMM.load('model\/ubm.mixture-32.person-20.immature.model')$/;"	kind:variable	line:65
+ubm	../TRECVID/speaker-recognition-master/src/testbench/test-reject.py	/^ubm = GMM.load('model\/ubm.mixture-32.person-20.immature.model')$/;"	kind:variable	line:74
+ubm_model_file	../TRECVID/speaker-recognition-master/src/testbench/config.py	/^ubm_model_file = 'model\/ubm.model'$/;"	kind:variable	line:17
+updateUserInfo	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def updateUserInfo(self):$/;"	kind:member	line:347
+update_all_timer	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def update_all_timer(self):$/;"	kind:member	line:400
+upload_avatar	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def upload_avatar(self):$/;"	kind:member	line:322
+utils.py	../TRECVID/speaker-recognition-master/src/feature/utils.py	1;"	kind:file	line:1
+utils.py	../TRECVID/speaker-recognition-master/src/filters/utils.py	1;"	kind:file	line:1
+utils.py	../TRECVID/speaker-recognition-master/src/gui/utils.py	1;"	kind:file	line:1
+vad	../TRECVID/speaker-recognition-master/src/filters/VAD.py	/^    vad = VAD()$/;"	kind:variable	line:41
+vad	../TRECVID/speaker-recognition-master/src/test/VAD.py	/^    def vad(self, fs, signal):$/;"	kind:member	line:147
+vad-test.py	../TRECVID/speaker-recognition-master/src/test/vad-test.py	1;"	kind:file	line:1
+vaded	../TRECVID/speaker-recognition-master/src/filters/noisered.py	/^    vaded = nr.filter(fs, sig)$/;"	kind:variable	line:47
+warn	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def warn(self, s):$/;"	kind:member	line:394
+window	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    window = 0$/;"	kind:variable	line:25
+window_size	../TRECVID/speaker-recognition-master/src/filters/ltsd.py	/^    window_size = 0$/;"	kind:variable	line:24
+worker_func	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    worker_func = None$/;"	kind:variable	line:5
+worker_proc	../TRECVID/speaker-recognition-master/src/test/multiprocess.py	/^    worker_proc = None$/;"	kind:variable	line:6
+wrapper	../TRECVID/speaker-recognition-master/src/feature/utils.py	/^    def wrapper(*args, **kwargs):$/;"	kind:function	line:13
+write	../TRECVID/speaker-recognition-master/src/test/gen-features-file.py	/^    def write(self, dirname):$/;"	kind:member	line:94
+write	../TRECVID/speaker-recognition-master/src/test/sample.py	/^    def write(self, fname):$/;"	kind:member	line:22
+write_wav	../TRECVID/speaker-recognition-master/src/gui/utils.py	/^def write_wav(fname, fs, signal):$/;"	kind:function	line:15
+writeuserdata	../TRECVID/speaker-recognition-master/src/gui/gui.py	/^    def writeuserdata(self):$/;"	kind:member	line:362
