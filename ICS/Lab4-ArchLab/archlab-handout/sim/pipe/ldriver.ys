@@ -1,0 +1,381 @@
+#######################################################################
+# Test for copying block of size 63;
+#######################################################################
+	.pos 0
+main:	irmovl Stack, %esp  	# Set up stack pointer
+	irmovl Stack, %ebp  	# Set up base pointer
+
+	# Set up arguments for copy function and then invoke it
+	irmovl $63, %eax		# src and dst have 63 elements
+	pushl %eax
+	irmovl dest, %eax	# dst array
+	pushl %eax
+	irmovl src, %eax	# src array
+	pushl %eax
+	call ncopy		 
+	halt			# should halt with num nonzeros in %eax
+StartFun:
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len ints to dst.
+# Return the number of positive ints (>0) contained in src.
+#
+#	Liu DeXin	1500017704@pku.edu.cn
+#
+# Describe how and why you modified the baseline code.
+# Optimizing Strategy:
+# 1. reduce the number of cyclies spending on loop:
+#	Unfolding the "while" loop.
+#	Using the code wirtten by hands instead of loops.
+# 2. avoid situations with load/use hazard
+#	Do not use value which just fetched from memory.Instead, get two numbers constantly with two available registers.
+# 3. avoid spending on branch misprediction
+#	Insert two sentences between "andl" and "jle" to keep away from insert bubble when mispredicting the PC address.
+# 4. add "iaddl" command
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+ncopy:	pushl %ebp		# Save old frame pointer
+	rrmovl %esp,%ebp	# Set up new frame pointer
+	pushl %esi		# Save callee-save regs
+	pushl %ebx
+	pushl %edi
+	mrmovl 8(%ebp),%ebx	# src
+	mrmovl 16(%ebp),%edx	# len
+	mrmovl 12(%ebp),%ecx	# dst
+
+##################################################################
+# You can modify this portion
+	xorl %eax,%eax		# count = 0;
+
+	jmp CL6
+L6:
+	mrmovl (%ebx), %esi
+	mrmovl 4(%ebx), %edi	
+	andl %esi, %esi
+	rmmovl %esi,(%ecx)
+	rmmovl %edi,4(%ecx)
+	jle L1
+	iaddl $1, %eax
+L1:
+	andl %edi, %edi
+	mrmovl 8(%ebx), %esi
+	mrmovl 12(%ebx), %edi
+	jle L2
+	iaddl $1, %eax
+L2:
+	andl %esi, %esi
+	rmmovl %esi,8(%ecx)
+	rmmovl %edi,12(%ecx)
+	jle L3
+	iaddl $1, %eax
+L3:	
+	andl %edi, %edi
+	mrmovl 16(%ebx), %esi
+	mrmovl 20(%ebx), %edi
+	jle L4
+	iaddl $1, %eax
+L4:    
+	andl %esi, %esi
+	rmmovl %esi,16(%ecx)
+	rmmovl %edi,20(%ecx)
+	jle L5
+	iaddl $1, %eax
+L5:    
+	iaddl $-6, %edx
+	iaddl $24, %ebx
+	iaddl $24, %ecx
+	andl %edi, %edi	
+	jle CL6
+	iaddl $1, %eax
+	
+CL6:
+	rrmovl %edx, %edi
+	iaddl $-5, %edi
+	jg L6
+
+	iaddl $-5, %edx
+	jl J4
+	mrmovl (%ebx), %esi
+	mrmovl 4(%ebx), %edi	
+	andl %esi, %esi
+	rmmovl %esi,(%ecx)
+	rmmovl %edi,4(%ecx)
+	jle J51
+	iaddl $1, %eax
+J51:
+	andl %edi, %edi
+	mrmovl 8(%ebx), %esi
+	mrmovl 12(%ebx), %edi
+	jle J52
+	iaddl $1, %eax
+J52:
+	andl %esi, %esi
+	rmmovl %esi,8(%ecx)
+	rmmovl %edi,12(%ecx)
+	jle J53
+	iaddl $1, %eax
+J53:	
+	andl %edi, %edi
+	mrmovl 16(%ebx), %esi
+	rmmovl %esi, 16(%ecx)
+	jle J54
+	iaddl $1, %eax
+J54:
+	andl %esi, %esi
+	jle Done
+	iaddl $1, %eax
+	jmp Done
+
+J4:
+	iaddl $1, %edx
+	jl J3
+	mrmovl (%ebx), %esi
+	mrmovl 4(%ebx), %edi	
+	andl %esi, %esi
+	rmmovl %esi,(%ecx)
+	rmmovl %edi,4(%ecx)
+	jle J41
+	iaddl $1, %eax
+J41:
+	andl %edi, %edi
+	mrmovl 8(%ebx), %esi
+	mrmovl 12(%ebx), %edi
+	jle J42
+	iaddl $1, %eax
+J42:
+	andl %esi, %esi
+	rmmovl %esi,8(%ecx)
+	rmmovl %edi,12(%ecx)
+	jle J43
+	iaddl $1, %eax
+J43:
+	andl %edi, %edi
+	jle Done
+	iaddl $1, %eax
+	jmp Done
+
+J3:
+	iaddl $1, %edx
+	jl J2
+	mrmovl (%ebx), %esi
+	mrmovl 4(%ebx), %edi	
+	andl %esi, %esi
+	rmmovl %esi,(%ecx)
+	rmmovl %edi,4(%ecx)
+	jle J31
+	iaddl $1, %eax
+J31:
+	andl %edi, %edi
+	mrmovl 8(%ebx), %esi
+	rmmovl %esi, 8(%ecx)
+	jle J32
+	iaddl $1, %eax
+J32:
+	andl %esi, %esi
+	jle Done
+	iaddl $1, %eax
+	jmp Done
+
+J2:
+	iaddl $1, %edx
+	jl J1
+	mrmovl (%ebx), %esi
+	mrmovl 4(%ebx), %edi	
+	andl %esi, %esi
+	rmmovl %esi,(%ecx)
+	rmmovl %edi,4(%ecx)
+	jle J21
+	iaddl $1, %eax
+J21:
+	andl %edi, %edi
+	jle Done
+	iaddl $1, %eax
+	jmp Done
+
+J1:
+	iaddl $1, %edx
+	jl Done
+	mrmovl (%ebx), %esi
+	rmmovl %esi, (%ecx)
+	andl %esi, %esi
+	jle Done
+	iaddl $1, %eax
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	popl %edi               # Restore callee-save registers
+	popl %ebx
+	popl %esi
+	rrmovl %ebp, %esp
+	popl %ebp
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */
+EndFun:
+
+###############################
+# Source and destination blocks 
+###############################
+	.align 4
+src:
+	.long -1
+	.long -2
+	.long -3
+	.long 4
+	.long -5
+	.long 6
+	.long 7
+	.long 8
+	.long -9
+	.long -10
+	.long -11
+	.long 12
+	.long 13
+	.long 0
+	.long -15
+	.long -16
+	.long -17
+	.long -18
+	.long 19
+	.long 20
+	.long -21
+	.long 22
+	.long -23
+	.long 24
+	.long 25
+	.long -26
+	.long 27
+	.long 28
+	.long -29
+	.long 30
+	.long -31
+	.long 32
+	.long 33
+	.long -34
+	.long 0
+	.long -36
+	.long -37
+	.long 38
+	.long 0
+	.long -40
+	.long 41
+	.long -42
+	.long -43
+	.long -44
+	.long 45
+	.long 46
+	.long -47
+	.long 48
+	.long 49
+	.long -50
+	.long -51
+	.long 52
+	.long -53
+	.long 54
+	.long 55
+	.long 56
+	.long -57
+	.long 0
+	.long 59
+	.long 60
+	.long 61
+	.long 62
+	.long 63
+	.long 0xbcdefa # This shouldn't get moved
+
+	.align 16
+Predest:
+	.long 0xbcdefa
+dest:
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+	.long 0xcdefab
+Postdest:
+	.long 0xdefabc
+
+.align 4
+# Run time stack
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+	.long 0
+
+Stack:

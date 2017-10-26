@@ -1,3 +1,0 @@
-rrmovl  %ebp, %esp
-mrmovl  (%esp), %ebp
-addl    $0x4, %esp
